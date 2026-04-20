@@ -23,10 +23,10 @@ const Store = {
 function seedData() {
   if (Store.get('seeded')) return;
   const users = [
-    { id: 'u1', name: 'Sarah Jenkins', email: 'sarah@example.com', password: 'Test@1234', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200&h=200', bio: 'Sustainability enthusiast, amateur photographer, and language learner. 🌿📸', location: 'Brooklyn, NY', joined: 'Mar 2023', favorites: [], role: 'admin' },
-    { id: 'u2', name: 'Carlos Martinez', email: 'carlos@example.com', password: 'Test@1234', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?crop=entropy&cs=tinysrgb&fit=facearea&facepad=2&w=256&h=256&q=80', bio: 'Language teacher and coding enthusiast.', location: 'Online', joined: 'Jan 2024', favorites: [] },
-    { id: 'u3', name: 'Miguel O\'Hara', email: 'miguel@example.com', password: 'Test@1234', avatar: 'https://i.pravatar.cc/150?img=11', bio: 'Spanish tutor.', location: 'Madrid', joined: 'Feb 2024', favorites: [] },
-    { id: 'u4', name: 'Alex Mercer', email: 'alex@example.com', password: 'Test@1234', avatar: 'https://i.pravatar.cc/150?img=12', bio: 'Sneakerhead and trader.', location: 'LA', joined: 'Dec 2023', favorites: [] }
+    { id: 'u1', name: 'Sarah Jenkins', email: 'sarah@example.com', password: 'Test@1234', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200&h=200', bio: 'Sustainability enthusiast, amateur photographer, and language learner. 🌿📸', location: 'Brooklyn, NY', joined: 'Mar 2023', createdAt: '2023-03-01T00:00:00Z', favorites: [], role: 'admin' },
+    { id: 'u2', name: 'Carlos Martinez', email: 'carlos@example.com', password: 'Test@1234', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?crop=entropy&cs=tinysrgb&fit=facearea&facepad=2&w=256&h=256&q=80', bio: 'Language teacher and coding enthusiast.', location: 'Online', joined: 'Jan 2024', createdAt: '2024-01-01T00:00:00Z', favorites: [] },
+    { id: 'u3', name: 'Miguel O\'Hara', email: 'miguel@example.com', password: 'Test@1234', avatar: 'https://i.pravatar.cc/150?img=11', bio: 'Spanish tutor.', location: 'Madrid', joined: 'Feb 2024', createdAt: '2024-02-01T00:00:00Z', favorites: [] },
+    { id: 'u4', name: 'Alex Mercer', email: 'alex@example.com', password: 'Test@1234', avatar: 'https://i.pravatar.cc/150?img=12', bio: 'Sneakerhead and trader.', location: 'LA', joined: 'Dec 2023', createdAt: '2023-12-01T00:00:00Z', favorites: [] }
   ];
   const items = [
     { id: 'i1', title: 'Vintage Camera', description: 'Classic film camera in excellent condition. Perfect for photography enthusiasts.', category: 'Electronics', image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=400&h=300', type: 'swap', condition: 'Like New', distance: '2.5 km', owner: 'u1', rating: 4.8 },
@@ -78,7 +78,7 @@ const Auth = {
   register(name, email, password) {
     const users = Store.get('users') || [];
     if (users.find(u => u.email === email)) return { success: false, error: 'Email already registered' };
-    const user = { id: 'u' + Date.now(), name, email, password, avatar: '', bio: '', location: '', joined: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), favorites: [] };
+  const user = { id: 'u' + Date.now(), name, email, password, avatar: 'https://i.pravatar.cc/150?u=' + email, bio: '', location: '', joined: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), createdAt: new Date().toISOString(), favorites: [] };
     users.push(user);
     Store.set('users', users);
     Store.setSession(user);
