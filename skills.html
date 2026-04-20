@@ -25,6 +25,7 @@
           Skills</a><a href="objects.html" class="nav-link">Swap Objects</a><a href="deals.html" class="nav-link">Half
           Price Deals</a></nav>
       <div class="header-actions">
+        <div class="header-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" class="input" id="headerSearchInput" placeholder="Search items, skills..." aria-label="Search items and skills"></div>
         <a href="messages.html" class="btn btn-icon btn-ghost" style="position:relative"><svg width="20" height="20"
             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z" />
@@ -462,6 +463,13 @@
         var card = e.target.closest('.skill-card');
         if (card) { window.location = 'skill-details.html?id=' + card.dataset.skillId; }
       });
+
+      /* ── EXPOSE SEARCH SETTER FOR HEADER SEARCH ──────────── */
+      window.setSkillSearchQuery = function(query) {
+        state.query = query;
+        searchInput.value = query;
+        refresh();
+      };
 
       /* ── INIT ─────────────────────────────────────────────── */
       refresh();

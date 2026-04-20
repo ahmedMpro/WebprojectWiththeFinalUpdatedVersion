@@ -32,9 +32,11 @@
       </div>
 
       <form id="addItemForm">
+        <!-- STEP 1: TYPE SELECTION -->
         <div class="form-card" style="margin-bottom:24px">
           <div class="form-card-header">
             <h2 style="font-size:18px;font-weight:700">What are you listing?</h2>
+            <p class="text-sm" style="color:var(--muted-fg);margin-top:4px">Choose the type of listing and we'll show you the relevant fields.</p>
           </div>
           <div class="form-card-body">
             <div class="type-selector">
@@ -57,26 +59,31 @@
           </div>
         </div>
 
+        <!-- STEP 2: BASIC DETAILS -->
         <div class="form-card" style="margin-bottom:24px">
           <div class="form-card-header">
             <h2 style="font-size:18px;font-weight:700">Details</h2>
           </div>
           <div class="form-card-body">
-            <!-- Title -->
+            <!-- Title (Required for all types) -->
             <div class="form-group">
-              <label for="itemTitle">Title</label>
-              <input type="text" class="input" id="itemTitle" placeholder="What are you offering?">
+              <label for="itemTitle">Title <span style="color:var(--danger);font-weight:700">*</span></label>
+              <input type="text" class="input" id="itemTitle" placeholder="What are you offering?" maxlength="100">
               <span class="form-error" id="titleError"></span>
+              <span style="font-size:12px;color:var(--muted-fg)">Max 100 characters</span>
             </div>
-            <!-- Description -->
+
+            <!-- Description (Required for all types) -->
             <div class="form-group">
-              <label for="itemDesc">Description</label>
-              <textarea class="textarea" id="itemDesc" placeholder="Describe your item, skill, or deal in detail. Include condition, what you're looking for, and any relevant info."></textarea>
+              <label for="itemDesc">Description <span style="color:var(--danger);font-weight:700">*</span></label>
+              <textarea class="textarea" id="itemDesc" placeholder="Describe your item, skill, or deal in detail. Include condition, what you're looking for, and any relevant info." maxlength="1000"></textarea>
               <span class="form-error" id="descError"></span>
+              <span style="font-size:12px;color:var(--muted-fg)">Max 1000 characters</span>
             </div>
+
             <!-- Condition (show for object/deal) -->
-            <div class="form-group" id="conditionField">
-              <label for="itemCondition">Condition</label>
+            <div class="form-group" id="conditionField" style="display:none">
+              <label for="itemCondition">Condition <span style="color:var(--danger);font-weight:700">*</span></label>
               <div class="select-wrap">
                 <select id="itemCondition" class="input">
                   <option value="">Select condition</option>
@@ -87,29 +94,50 @@
                   <option value="used">Used</option>
                 </select>
               </div>
+              <span class="form-error" id="conditionError"></span>
             </div>
-            <!-- Price (show only for deal) -->
-            <div class="form-group" id="priceFields" style="display:none;flex-direction:row;gap:16px">
-              <div class="form-group" style="flex:1">
-                <label for="originalPrice">Original Price ($)</label>
-                <input type="number" class="input" id="originalPrice" placeholder="0.00">
-              </div>
-              <div class="form-group" style="flex:1">
-                <label for="sellingPrice">Selling Price ($)</label>
-                <input type="number" class="input" id="sellingPrice" placeholder="0.00">
-              </div>
-            </div>
-            <!-- Location -->
-            <div class="form-group">
-              <label for="itemLocation">Location</label>
+
+            <!-- Location (Required for Object/Deal, Optional for Skill) -->
+            <div class="form-group" id="locationField">
+              <label for="itemLocation">Location <span id="locationRequired" style="color:var(--danger);font-weight:700">*</span></label>
               <input type="text" class="input" id="itemLocation" placeholder="City, area, or 'Online'">
+              <span class="form-error" id="locationError"></span>
             </div>
           </div>
         </div>
 
-        <div class="form-card" style="margin-bottom:24px">
+        <!-- STEP 3: PRICING (Deal only) -->
+        <div class="form-card" style="margin-bottom:24px;display:none" id="priceCard">
           <div class="form-card-header">
-            <h2 style="font-size:18px;font-weight:700">Photos</h2>
+            <h2 style="font-size:18px;font-weight:700">Pricing</h2>
+            <p class="text-sm" style="color:var(--muted-fg);margin-top:4px">Selling price must not exceed original price</p>
+          </div>
+          <div class="form-card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <!-- Original Price -->
+              <div class="form-group">
+                <label for="originalPrice">Original Price ($) <span style="color:var(--danger);font-weight:700">*</span></label>
+                <input type="number" class="input" id="originalPrice" placeholder="0.00" step="0.01" min="0">
+                <span class="form-error" id="originalPriceError"></span>
+                <span style="font-size:12px;color:var(--muted-fg)">Must be positive number</span>
+              </div>
+
+              <!-- Selling Price -->
+              <div class="form-group">
+                <label for="sellingPrice">Selling Price ($) <span style="color:var(--danger);font-weight:700">*</span></label>
+                <input type="number" class="input" id="sellingPrice" placeholder="0.00" step="0.01" min="0">
+                <span class="form-error" id="sellingPriceError"></span>
+                <span style="font-size:12px;color:var(--muted-fg)">Must be ≤ Original Price</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: FILE UPLOADS -->
+        <!-- Images for Object/Deal -->
+        <div class="form-card" style="margin-bottom:24px;display:none" id="photoCard">
+          <div class="form-card-header">
+            <h2 style="font-size:18px;font-weight:700">Photos <span style="color:var(--danger);font-weight:700">*</span></h2>
             <p class="text-sm" style="color:var(--muted-fg);margin-top:4px">Upload up to 5 photos (<span id="photoCount">0</span>/5)</p>
           </div>
           <div class="form-card-body">
@@ -121,9 +149,37 @@
               <input type="file" id="photoInput" accept="image/jpeg, image/png, image/webp" style="display:none">
             </div>
             <span class="form-error" id="photoError"></span>
+            <span style="font-size:12px;color:var(--muted-fg)">Accepted formats: JPG, PNG, WEBP</span>
           </div>
         </div>
 
+        <!-- CV Upload for Skill -->
+        <div class="form-card" style="margin-bottom:24px;display:none" id="cvCard">
+          <div class="form-card-header">
+            <h2 style="font-size:18px;font-weight:700">Curriculum Vitae (CV) <span style="color:var(--danger);font-weight:700">*</span></h2>
+            <p class="text-sm" style="color:var(--muted-fg);margin-top:4px">Upload your CV or relevant document to showcase your expertise</p>
+          </div>
+          <div class="form-card-body">
+            <div style="border:2px dashed var(--border);border-radius:var(--radius-md);padding:24px;text-align:center;background:rgba(124,58,237,.02);cursor:pointer;transition:all 0.2s" id="cvUploadArea">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin:0 auto 12px;color:var(--primary)"><path d="M12 2v20"/><path d="M2 12h20"/></svg>
+              <h3 style="margin:8px 0;font-weight:600">Click to upload or drag & drop</h3>
+              <p style="color:var(--muted-fg);font-size:14px">PDF, DOC, DOCX (Max 10MB)</p>
+              <input type="file" id="cvInput" accept=".pdf,.doc,.docx" style="display:none">
+            </div>
+            <div id="cvFileDisplay" style="margin-top:12px;padding:12px;background:var(--card);border-radius:var(--radius-md);border:1px solid var(--border);display:none">
+              <div style="display:flex;align-items:center;gap:8px">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--success)"><path d="M12 2v20"/><path d="M2 12h20"/></svg>
+                <span id="cvFileName" style="font-weight:500">Document.pdf</span>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('cvInput').value='';document.getElementById('cvFileDisplay').style.display='none';document.getElementById('cvUploadArea').style.display='block'" style="margin-left:auto">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+            </div>
+            <span class="form-error" id="cvError"></span>
+          </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
         <div class="flex justify-between gap-4" style="flex-wrap:wrap">
           <a href="index.html" class="btn btn-outline btn-lg" style="flex:1;min-width:140px;text-align:center">Cancel</a>
           <button type="submit" class="btn btn-primary btn-lg" style="flex:2;min-width:200px">
