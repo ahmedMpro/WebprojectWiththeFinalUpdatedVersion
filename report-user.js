@@ -8,19 +8,19 @@
 
   /* ── COUNTRY CODES ──────────────────────────────────────── */
   var countryCodes = [
-    { code: '+1', label: 'US +1' },
-    { code: '+44', label: 'UK +44' },
-    { code: '+20', label: 'EG +20' },
-    { code: '+33', label: 'FR +33' },
-    { code: '+49', label: 'DE +49' },
-    { code: '+34', label: 'ES +34' },
-    { code: '+91', label: 'IN +91' },
-    { code: '+81', label: 'JP +81' },
-    { code: '+86', label: 'CN +86' },
-    { code: '+971', label: 'AE +971' },
-    { code: '+966', label: 'SA +966' },
-    { code: '+55', label: 'BR +55' },
-    { code: '+61', label: 'AU +61' }
+    { code: '+1',   label: 'US +1',   minLen: 10, maxLen: 10 },
+    { code: '+44',  label: 'UK +44',  minLen: 10, maxLen: 10 },
+    { code: '+20',  label: 'EG +20',  minLen: 10, maxLen: 10 },
+    { code: '+33',  label: 'FR +33',  minLen: 9,  maxLen: 9  },
+    { code: '+49',  label: 'DE +49',  minLen: 10, maxLen: 11 },
+    { code: '+34',  label: 'ES +34',  minLen: 9,  maxLen: 9  },
+    { code: '+91',  label: 'IN +91',  minLen: 10, maxLen: 10 },
+    { code: '+81',  label: 'JP +81',  minLen: 10, maxLen: 10 },
+    { code: '+86',  label: 'CN +86',  minLen: 11, maxLen: 11 },
+    { code: '+971', label: 'AE +971', minLen: 9,  maxLen: 9  },
+    { code: '+966', label: 'SA +966', minLen: 9,  maxLen: 9  },
+    { code: '+55',  label: 'BR +55',  minLen: 10, maxLen: 11 },
+    { code: '+61',  label: 'AU +61',  minLen: 9,  maxLen: 9  }
   ];
 
   /* ── ISSUE TYPES ────────────────────────────────────────── */
@@ -42,6 +42,41 @@
 
   /* ── HELPERS ─────────────────────────────────────────────── */
   function esc(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+  /* Returns the country-code entry for the currently selected dial code */
+  function getSelectedCC() {
+    var sel = document.getElementById('report-cc');
+    if (!sel) return null;
+    var code = sel.value;
+    return countryCodes.find(function (c) { return c.code === code; }) || null;
+  }
+
+  /* Validates phone number digits against the selected country rules */
+  function isPhoneValid(digits) {
+    var cc = getSelectedCC();
+    if (!cc) return digits.length >= 6 && digits.length <= 15;
+    return digits.length >= cc.minLen && digits.length <= cc.maxLen;
+  }
+
+  /* Keeps the phone field digits-only without changing the validation rules */
+  function sanitizePhoneValue(value) {
+    return (value || '').replace(/\D/g, '');
+  }
+
+  function sanitizePhoneInput(input) {
+    var nextValue = sanitizePhoneValue(input.value);
+    if (input.value === nextValue) return;
+
+    var cursor = typeof input.selectionStart === 'number' ? input.selectionStart : null;
+    var digitsBeforeCursor = cursor === null ? null : sanitizePhoneValue(input.value.slice(0, cursor)).length;
+
+    input.value = nextValue;
+
+    if (cursor !== null && typeof input.setSelectionRange === 'function') {
+      var nextCursor = Math.min(digitsBeforeCursor, nextValue.length);
+      input.setSelectionRange(nextCursor, nextCursor);
+    }
+  }
 
   function el(tag, cls, html) {
     var e = document.createElement(tag);
@@ -87,7 +122,7 @@
         '<div class="form-group"><label for="report-phone">Phone Number <span style="color:var(--primary)">*</span></label>' +
           '<div class="report-field-row" style="gap:8px">' +
             '<div class="select-wrap" style="flex:0 0 110px"><select id="report-cc" class="input" aria-label="Country code">' + ccOptions + '</select></div>' +
-            '<input type="tel" id="report-phone" class="input" placeholder="555 123 4567" required aria-label="Phone number" style="flex:1">' +
+            '<input type="tel" id="report-phone" class="input" placeholder="555 123 4567" required aria-label="Phone number" inputmode="numeric" autocomplete="tel-national" style="flex:1">' +
           '</div>' +
           '<span class="form-error" id="report-phone-err"></span>' +
         '</div>' +
@@ -193,6 +228,14 @@
   function open(opts) {
     _opts = opts || {};
     _files = [];
+
+    /* ── Bug #5: Prevent self-reporting ── */
+    var currentUser = window.SwapifyAuth ? SwapifyAuth.currentUser() : null;
+    if (currentUser && _opts.reportedUserId && currentUser.id === _opts.reportedUserId) {
+      SwapifyUI.toast('You cannot report yourself', 'warning');
+      return; // block opening the modal entirely
+    }
+
     var overlay = getOverlay();
     var body = overlay.querySelector('#reportModalBody');
     var footer = overlay.querySelector('#reportModalFooter');
@@ -262,23 +305,94 @@
       checkFormValidity();
     });
 
-    // Email live validation
+    // Email live validation — Bug #3: must match logged-in user's email
     var emailEl = document.getElementById('report-email');
     emailEl.addEventListener('input', function () {
-      var valid = SwapifyValidate.email(emailEl.value);
+      var loggedInUser = window.SwapifyAuth ? SwapifyAuth.currentUser() : null;
+      var formatOk = SwapifyValidate.email(emailEl.value);
+      var matchOk  = loggedInUser ? emailEl.value.trim().toLowerCase() === loggedInUser.email.toLowerCase() : true;
+      var valid    = formatOk && matchOk;
       emailEl.classList.toggle('valid', valid);
       emailEl.classList.toggle('invalid', emailEl.value.length > 0 && !valid);
-      document.getElementById('report-email-err').textContent = emailEl.value.length > 0 && !valid ? 'Please enter a valid email' : '';
+      var errMsg = '';
+      if (emailEl.value.length > 0) {
+        if (!formatOk) errMsg = 'Please enter a valid email';
+        else if (!matchOk) errMsg = 'Email must match your logged-in account email';
+      }
+      document.getElementById('report-email-err').textContent = errMsg;
       checkFormValidity();
     });
 
-    // Phone live validation
+    // Phone live validation — Bug #2: country-based length rules
     var phoneEl = document.getElementById('report-phone');
-    phoneEl.addEventListener('input', function () {
-      var valid = /^\d{6,15}$/.test(phoneEl.value.replace(/[\s\-()]/g, ''));
+    var ccSelect = document.getElementById('report-cc');
+    function validatePhone() {
+      var digits = phoneEl.value.replace(/[\s\-()]/g, '');
+      var valid = digits.length > 0 && isPhoneValid(digits);
       phoneEl.classList.toggle('valid', valid);
-      phoneEl.classList.toggle('invalid', phoneEl.value.length > 0 && !valid);
-      document.getElementById('report-phone-err').textContent = phoneEl.value.length > 0 && !valid ? 'Enter a valid phone number' : '';
+      phoneEl.classList.toggle('invalid', digits.length > 0 && !valid);
+      var cc = getSelectedCC();
+      var hint = cc ? cc.minLen + (cc.maxLen !== cc.minLen ? '-' + cc.maxLen : '') + ' digits' : '6-15 digits';
+      document.getElementById('report-phone-err').textContent = digits.length > 0 && !valid ? 'Enter a valid phone number (' + hint + ')' : '';
+      checkFormValidity();
+    }
+    phoneEl.addEventListener('keydown', function (e) {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.key.length === 1 && !/^[0-9]$/.test(e.key)) e.preventDefault();
+    });
+    phoneEl.addEventListener('paste', function (e) {
+      var clipboard = e.clipboardData || window.clipboardData;
+      var pastedText = clipboard ? clipboard.getData('text') : '';
+      var digits = sanitizePhoneValue(pastedText);
+      e.preventDefault();
+
+      if (!digits) return;
+
+      var start = typeof phoneEl.selectionStart === 'number' ? phoneEl.selectionStart : phoneEl.value.length;
+      var end = typeof phoneEl.selectionEnd === 'number' ? phoneEl.selectionEnd : phoneEl.value.length;
+      var before = sanitizePhoneValue(phoneEl.value.slice(0, start));
+      var after = sanitizePhoneValue(phoneEl.value.slice(end));
+
+      phoneEl.value = before + digits + after;
+      if (typeof phoneEl.setSelectionRange === 'function') {
+        var caret = before.length + digits.length;
+        phoneEl.setSelectionRange(caret, caret);
+      }
+
+      validatePhone();
+    });
+    phoneEl.addEventListener('input', function () {
+      sanitizePhoneInput(phoneEl);
+      validatePhone();
+    });
+    ccSelect.addEventListener('change', validatePhone); // re-validate when country changes
+
+    // Date validation — Bug #4: must be between account creation and today
+    var dateEl = document.getElementById('report-date');
+    dateEl.addEventListener('change', function () {
+      var dateVal = dateEl.value; // YYYY-MM-DD
+      if (!dateVal) { document.getElementById('report-date-err') && (document.getElementById('report-date-err').textContent = ''); checkFormValidity(); return; }
+      var selectedDate = new Date(dateVal);
+      var today = new Date(); today.setHours(23,59,59,999);
+      var loggedInUser = window.SwapifyAuth ? SwapifyAuth.currentUser() : null;
+      var createdAt = loggedInUser && loggedInUser.createdAt ? new Date(loggedInUser.createdAt) : null;
+      var errEl = dateEl.parentElement.querySelector('.form-error') || null;
+      // Create error span dynamically if not present
+      if (!errEl) {
+        errEl = document.createElement('span');
+        errEl.className = 'form-error';
+        errEl.id = 'report-date-err';
+        dateEl.parentElement.appendChild(errEl);
+      }
+      var errMsg = '';
+      if (selectedDate > today) {
+        errMsg = 'Date cannot be in the future';
+      } else if (createdAt && selectedDate < createdAt) {
+        errMsg = 'Date cannot be before your account was created';
+      }
+      errEl.textContent = errMsg;
+      dateEl.classList.toggle('invalid', errMsg.length > 0);
+      dateEl.classList.toggle('valid', errMsg.length === 0);
       checkFormValidity();
     });
 
@@ -312,13 +426,33 @@
     var phone = document.getElementById('report-phone');
     var desc = document.getElementById('report-desc');
     var declare = document.getElementById('report-declare');
+    var dateEl = document.getElementById('report-date');
     var issueSelected = document.querySelector('input[name="reportIssueType"]:checked');
 
-    var valid = SwapifyValidate.email(email.value) &&
-      /^\d{6,15}$/.test(phone.value.replace(/[\s\-()]/g, '')) &&
+    // Bug #3: email must also match logged-in user
+    var loggedInUser = window.SwapifyAuth ? SwapifyAuth.currentUser() : null;
+    var emailFormatOk = SwapifyValidate.email(email.value);
+    var emailMatchOk  = loggedInUser ? email.value.trim().toLowerCase() === loggedInUser.email.toLowerCase() : true;
+
+    // Bug #2: country-based phone validation
+    var phoneDigits = phone.value.replace(/[\s\-()]/g, '');
+
+    // Bug #4: date validation
+    var dateValid = true;
+    if (dateEl.value) {
+      var selDate = new Date(dateEl.value);
+      var today = new Date(); today.setHours(23,59,59,999);
+      if (selDate > today) dateValid = false;
+      var createdAt = loggedInUser && loggedInUser.createdAt ? new Date(loggedInUser.createdAt) : null;
+      if (createdAt && selDate < createdAt) dateValid = false;
+    }
+
+    var valid = emailFormatOk && emailMatchOk &&
+      isPhoneValid(phoneDigits) && phoneDigits.length > 0 &&
       desc.value.length >= DESC_MIN &&
       declare.checked &&
-      !!issueSelected;
+      !!issueSelected &&
+      dateValid;
 
     btn.disabled = !valid;
   }
@@ -399,8 +533,11 @@
       submittedAt: new Date().toISOString()
     };
 
-    // Console output for debugging
-    console.log('[SwapifyReport] Report submitted:', reportData);
+    // Bug #1: Mock email submission to swapifyreportcenter@gmail.com
+    console.log('[SwapifyReport] ─── Simulating email to: swapifyreportcenter@gmail.com ───');
+    console.log('[SwapifyReport] Subject: New User Report — ' + reportData.reportedUserName);
+    console.log('[SwapifyReport] Report payload:', JSON.stringify(reportData, null, 2));
+    console.log('[SwapifyReport] ─── End simulated email ───');
 
     // Loading state
     SwapifyUI.setLoading(btn, true);
@@ -413,9 +550,9 @@
       var reason = issueLabel + (reportData.otherReason ? ': ' + reportData.otherReason : '') + ' — ' + reportData.description.substring(0, 100);
       SwapifyAdmin.addReport('user', reportData.reportedUserId, reporter ? reporter.id : 'anonymous', reason);
 
-      // Show success
+      // Show success — reuses existing SwapifyUI.toast and renders in-modal success
       renderSuccess();
-      SwapifyUI.toast('Report submitted successfully ✓', 'success');
+      SwapifyUI.toast('Report submitted successfully', 'success');
 
       // Auto-close after 3s
       setTimeout(close, 3000);
