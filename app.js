@@ -761,47 +761,56 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // ===== ADD ITEM TYPE SELECTOR WITH DYNAMIC FORM FIELDS =====
+  function updateFormFields(type) {
+    // Update field visibility based on type
+    var conditionField = document.getElementById('conditionField');
+    var locationField = document.getElementById('locationField');
+    var locationRequired = document.getElementById('locationRequired');
+    var priceCard = document.getElementById('priceCard');
+    var photoCard = document.getElementById('photoCard');
+    var cvCard = document.getElementById('cvCard');
+    
+    // Reset all fields visibility first
+    if (conditionField) conditionField.style.display = 'none';
+    if (priceCard) priceCard.style.display = 'none';
+    if (photoCard) photoCard.style.display = 'none';
+    if (cvCard) cvCard.style.display = 'none';
+    
+    // Clear errors on type change
+    document.querySelectorAll('.form-error').forEach(function(el) { el.textContent = ''; });
+    
+    if (type === 'object') {
+      // Object: Condition, Location (required), Photos
+      if (conditionField) conditionField.style.display = 'block';
+      if (photoCard) photoCard.style.display = 'block';
+      if (locationRequired) locationRequired.style.display = 'inline';
+    } else if (type === 'skill') {
+      // Skill: Location (optional), CV
+      if (locationRequired) locationRequired.style.display = 'none';
+      if (cvCard) cvCard.style.display = 'block';
+    } else if (type === 'deal') {
+      // Deal: Condition, Location (required), Prices, Photos
+      if (conditionField) conditionField.style.display = 'block';
+      if (priceCard) priceCard.style.display = 'block';
+      if (photoCard) photoCard.style.display = 'block';
+      if (locationRequired) locationRequired.style.display = 'inline';
+    }
+  }
+
   document.querySelectorAll('.type-option').forEach(function(opt) {
     opt.addEventListener('click', function() {
       document.querySelectorAll('.type-option').forEach(function(o) { o.classList.remove('active'); });
       opt.classList.add('active');
       var type = opt.getAttribute('data-type');
-      
-      // Update field visibility based on type
-      var conditionField = document.getElementById('conditionField');
-      var locationField = document.getElementById('locationField');
-      var locationRequired = document.getElementById('locationRequired');
-      var priceCard = document.getElementById('priceCard');
-      var photoCard = document.getElementById('photoCard');
-      var cvCard = document.getElementById('cvCard');
-      
-      // Reset all fields visibility first
-      if (conditionField) conditionField.style.display = 'none';
-      if (priceCard) priceCard.style.display = 'none';
-      if (photoCard) photoCard.style.display = 'none';
-      if (cvCard) cvCard.style.display = 'none';
-      
-      // Clear errors on type change
-      document.querySelectorAll('.form-error').forEach(function(el) { el.textContent = ''; });
-      
-      if (type === 'object') {
-        // Object: Condition, Location (required), Photos
-        if (conditionField) conditionField.style.display = 'block';
-        if (photoCard) photoCard.style.display = 'block';
-        if (locationRequired) locationRequired.style.display = 'inline';
-      } else if (type === 'skill') {
-        // Skill: Location (optional), CV
-        if (locationRequired) locationRequired.style.display = 'none';
-        if (cvCard) cvCard.style.display = 'block';
-      } else if (type === 'deal') {
-        // Deal: Condition, Location (required), Prices, Photos
-        if (conditionField) conditionField.style.display = 'block';
-        if (priceCard) priceCard.style.display = 'block';
-        if (photoCard) photoCard.style.display = 'block';
-        if (locationRequired) locationRequired.style.display = 'inline';
-      }
+      updateFormFields(type);
     });
   });
+
+  // Set initial state
+  var initialActive = document.querySelector('.type-option.active');
+  if (initialActive) {
+    updateFormFields(initialActive.getAttribute('data-type'));
+  }
 
   // ===== ENHANCED PRICE VALIDATION =====
   var Validator = {
@@ -858,6 +867,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
     });
+
+    originalPriceInput.addEventListener('blur', function() {
+      var val = this.value;
+      if (val !== '' && Validator.isValidPrice(val)) {
+        var num = parseFloat(val);
+        this.value = num.toFixed(2);
+      } else if (val !== '' && !Validator.isValidPrice(val)) {
+        this.value = '0.00';
+      }
+    });
   }
   
   if (sellingPriceInput) {
@@ -891,6 +910,16 @@ document.addEventListener('DOMContentLoaded', function() {
           this.classList.remove('invalid');
           this.classList.toggle('valid', validVal !== '');
         }
+      }
+    });
+
+    sellingPriceInput.addEventListener('blur', function() {
+      var val = this.value;
+      if (val !== '' && Validator.isValidPrice(val)) {
+        var num = parseFloat(val);
+        this.value = num.toFixed(2);
+      } else if (val !== '' && !Validator.isValidPrice(val)) {
+        this.value = '0.00';
       }
     });
   }
