@@ -108,10 +108,10 @@
         </div>
         <div class="hero-social-proof">
           <div class="avatar-stack" aria-hidden="false">
-            <a href="profile.html?id=u1" class="avatar-link" aria-label="View Sarah's profile"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200&h=200" class="avatar" alt="Sarah Jenkins"></a>
-            <a href="profile.html?id=u2" class="avatar-link" aria-label="View Carlos's profile"><img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?crop=entropy&cs=tinysrgb&fit=facearea&facepad=2&w=256&h=256&q=80" class="avatar" alt="Carlos Martinez"></a>
-            <a href="profile.html?id=u3" class="avatar-link" aria-label="View Miguel's profile"><img src="https://i.pravatar.cc/150?img=11" class="avatar" alt="Miguel O'Hara"></a>
-            <a href="profile.html?id=u4" class="avatar-link" aria-label="View Alex's profile"><img src="https://i.pravatar.cc/150?img=12" class="avatar" alt="Alex Mercer"></a>
+            <a href="profile.html?id=u1&source=hero" class="avatar-link" aria-label="View Sarah's profile"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200&h=200" class="avatar" alt="Sarah Jenkins"></a>
+            <a href="profile.html?id=u2&source=hero" class="avatar-link" aria-label="View Carlos's profile"><img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?crop=entropy&cs=tinysrgb&fit=facearea&facepad=2&w=256&h=256&q=80" class="avatar" alt="Carlos Martinez"></a>
+            <a href="profile.html?id=u3&source=hero" class="avatar-link" aria-label="View Miguel's profile"><img src="https://i.pravatar.cc/150?img=11" class="avatar" alt="Miguel O'Hara"></a>
+            <a href="profile.html?id=u4&source=hero" class="avatar-link" aria-label="View Alex's profile"><img src="https://i.pravatar.cc/150?img=12" class="avatar" alt="Alex Mercer"></a>
             <a href="skills.html" class="avatar-link" aria-label="View community skills">
               <div class="avatar" style="background:var(--gradient-main);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;border:2px solid var(--bg)" aria-hidden="true">+2k</div>
             </a>
@@ -188,12 +188,17 @@
         </div>
       </div>
       <!-- JS renders exactly 4 cards here -->
-      <div class="grid grid-4 gap-6" id="recommendedGrid" role="list" aria-label="Recommended items">
-        <!-- Skeleton loaders shown until JS renders -->
-        <div class="skeleton-card" aria-hidden="true"></div>
-        <div class="skeleton-card" aria-hidden="true"></div>
-        <div class="skeleton-card" aria-hidden="true"></div>
-        <div class="skeleton-card" aria-hidden="true"></div>
+      <div class="scroll-stack-scroller" id="recommendedScroller">
+        <div class="scroll-stack-inner">
+          <div class="scroll-stack-list" id="recommendedGrid" role="list" aria-label="Recommended items">
+            <!-- Skeleton loaders shown until JS renders -->
+            <div class="skeleton-card" aria-hidden="true"></div>
+            <div class="skeleton-card" aria-hidden="true"></div>
+            <div class="skeleton-card" aria-hidden="true"></div>
+            <div class="skeleton-card" aria-hidden="true"></div>
+          </div>
+          <div class="scroll-stack-end" aria-hidden="true"></div>
+        </div>
       </div>
       <div style="margin-top:32px;text-align:center;display:none" id="viewAllMobile">
         <a href="objects.html" class="btn btn-outline w-full">View all recommendations</a>
@@ -340,6 +345,7 @@
   </div>
 
   <!-- Shared engine first, then home-specific logic -->
+  <script src="https://unpkg.com/lenis@1.1.16/dist/lenis.min.js" defer></script>
   <script src="app.js" defer></script>
   <script src="script.js" defer></script>
 </body>

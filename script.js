@@ -77,6 +77,7 @@
     currentActivityIdx: 0,
     activityTimer: null
   };
+  let scrollStackCleanup = null;
 
   /* ─── DOM CACHE ──────────────────────────────────────────── */
   const grid        = document.getElementById('recommendedGrid');
@@ -134,7 +135,7 @@
         : '';
 
       const card = document.createElement('div');
-      card.className = `item-card fade-in ${delay}`;
+      card.className = `item-card scroll-stack-card fade-in ${delay}`;
       card.setAttribute('data-item-id', item.id);
       card.setAttribute('role', 'listitem');
       card.innerHTML = `
@@ -183,6 +184,210 @@
         el.classList.add('visible');
       });
     }, 80);
+  }
+
+  /* ─── RECOMMENDED SCROLL STACK ──────────────────────────── */
+  function initRecommendedScrollStack() {
+    const scroller = document.getElementById('recommendedScroller');
+    if (!grid || !scroller) return;
+
+    if (scrollStackCleanup) {
+      scrollStackCleanup();
+      scrollStackCleanup = null;
+    }
+
+    const cards = Array.from(grid.querySelectorAll('.scroll-stack-card'));
+    const endElement = scroller.querySelector('.scroll-stack-end');
+    if (!cards.length || !endElement) return;
+
+    const itemDistance = 55;
+    const itemScale = 0.02;
+    const itemStackDistance = 6;
+    const stackPosition = '20%';
+    const scaleEndPosition = '0%';
+    const baseScale = 0.94;
+    const rotationAmount = 0;
+    const blurAmount = 0;
+    const currentTransforms = new Map();
+    const transformLerp = 1;
+    let isUpdating = false;
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function smoothstep(t) {
+      const x = Math.max(0, Math.min(1, t));
+      return x * x * (3 - 2 * x);
+    }
+
+    function calculateProgress(scrollTop, start, end) {
+      if (scrollTop < start) return 0;
+      if (scrollTop > end) return 1;
+      return (scrollTop - start) / (end - start);
+    }
+
+    function parsePercentage(value, containerHeight) {
+      if (typeof value === 'string' && value.indexOf('%') !== -1) {
+        return (parseFloat(value) / 100) * containerHeight;
+      }
+      return parseFloat(value);
+    }
+
+    function getElementOffset(element) {
+      return element.offsetTop;
+    }
+
+    cards.forEach(function (card, i) {
+      if (i < cards.length - 1) {
+        card.style.marginBottom = itemDistance + 'px';
+      }
+      card.style.willChange = 'transform, filter';
+      card.style.transformOrigin = 'top center';
+      card.style.backfaceVisibility = 'hidden';
+      card.style.transform = 'translateZ(0)';
+      card.style.webkitTransform = 'translateZ(0)';
+      card.style.perspective = '1000px';
+      card.style.webkitPerspective = '1000px';
+    });
+
+    function updateCardTransforms() {
+      if (!cards.length || isUpdating) return;
+      isUpdating = true;
+
+      const scrollTop = scroller.scrollTop;
+      const containerHeight = scroller.clientHeight;
+      const stackPositionPx = parsePercentage(stackPosition, containerHeight);
+      const scaleEndPositionPx = parsePercentage(scaleEndPosition, containerHeight);
+      const endElementTop = getElementOffset(endElement);
+
+      cards.forEach(function (card, i) {
+        const cardTop = getElementOffset(card);
+        const triggerStart = cardTop - stackPositionPx - itemStackDistance * i;
+        const triggerEnd = cardTop - scaleEndPositionPx;
+        const pinStart = cardTop - stackPositionPx - itemStackDistance * i;
+        const pinEnd = endElementTop - containerHeight / 2;
+
+        const scaleProgress = smoothstep(calculateProgress(scrollTop, triggerStart, triggerEnd));
+        const targetScale = baseScale + i * itemScale;
+        const scale = 1 - scaleProgress * (1 - targetScale);
+        const rotation = rotationAmount ? i * rotationAmount * scaleProgress : 0;
+
+        let blur = 0;
+        if (blurAmount) {
+          let topCardIndex = 0;
+          for (let j = 0; j < cards.length; j++) {
+            const jCardTop = getElementOffset(cards[j]);
+            const jTriggerStart = jCardTop - stackPositionPx - itemStackDistance * j;
+            if (scrollTop >= jTriggerStart) topCardIndex = j;
+          }
+          if (i < topCardIndex) {
+            const depthInStack = topCardIndex - i;
+            blur = Math.max(0, depthInStack * blurAmount);
+          }
+        }
+
+        let translateY = 0;
+        const isPinned = scrollTop >= pinStart && scrollTop <= pinEnd;
+
+        if (isPinned) {
+          translateY = scrollTop - cardTop + stackPositionPx + itemStackDistance * i;
+        } else if (scrollTop > pinEnd) {
+          translateY = pinEnd - cardTop + stackPositionPx + itemStackDistance * i;
+        }
+
+        const target = {
+          translateY: translateY,
+          scale: scale,
+          rotation: rotation,
+          blur: blur
+        };
+
+        const current = currentTransforms.get(i);
+        const next = current
+          ? {
+              translateY: lerp(current.translateY, target.translateY, transformLerp),
+              scale: lerp(current.scale, target.scale, transformLerp),
+              rotation: lerp(current.rotation, target.rotation, transformLerp),
+              blur: lerp(current.blur, target.blur, transformLerp)
+            }
+          : target;
+
+        currentTransforms.set(i, next);
+
+        const transform = 'translate3d(0, ' + next.translateY + 'px, 0) scale(' + next.scale + ') rotate(' + next.rotation + 'deg)';
+        const filter = next.blur > 0 ? 'blur(' + next.blur + 'px)' : '';
+        card.style.transform = transform;
+        card.style.filter = filter;
+      });
+
+      isUpdating = false;
+    }
+
+    let rafPending = false;
+    function handleScroll() {
+      if (rafPending) return;
+      rafPending = true;
+      requestAnimationFrame(function () {
+        updateCardTransforms();
+        rafPending = false;
+      });
+    }
+
+    let lenis = null;
+    let lenisRafId = null;
+
+    if (window.Lenis) {
+      lenis = new window.Lenis({
+        wrapper: scroller,
+        content: scroller.querySelector('.scroll-stack-inner'),
+        duration: 1.05,
+        easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+        smoothWheel: true,
+        touchMultiplier: 2,
+        infinite: false,
+        gestureOrientationHandler: true,
+        normalizeWheel: true,
+        wheelMultiplier: 1,
+        touchInertiaMultiplier: 35,
+        lerp: 0.15,
+        syncTouch: true,
+        syncTouchLerp: 0.15,
+        touchInertia: 0.6
+      });
+
+      const raf = function (time) {
+        lenis.raf(time);
+        updateCardTransforms();
+        lenisRafId = requestAnimationFrame(raf);
+      };
+      lenisRafId = requestAnimationFrame(raf);
+    } else {
+      scroller.addEventListener('scroll', handleScroll, { passive: true });
+    }
+
+    window.addEventListener('resize', handleScroll);
+    handleScroll();
+
+    scrollStackCleanup = function () {
+      if (lenisRafId) cancelAnimationFrame(lenisRafId);
+      if (lenis) lenis.destroy();
+      if (!lenis) scroller.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+
+      cards.forEach(function (card) {
+        card.style.marginBottom = '';
+        card.style.transform = '';
+        card.style.filter = '';
+        card.style.willChange = '';
+        card.style.transformOrigin = '';
+        card.style.backfaceVisibility = '';
+        card.style.webkitTransform = '';
+        card.style.perspective = '';
+        card.style.webkitPerspective = '';
+      });
+      currentTransforms.clear();
+    };
   }
 
   /* ─── OPEN ITEM MODAL ────────────────────────────────────── */
@@ -454,6 +659,7 @@
   /* ─── INIT ───────────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', function () {
     renderRecommendedCards();
+    initRecommendedScrollStack();
     bindEvents();
     /* Small delay so skeleton is visible for a moment */
     setTimeout(startActivityRotation, 600);

@@ -61,6 +61,52 @@ html {
   100% { background-position: -200% 0; }
 }
 
+/* ===== RECOMMENDED SCROLL STACK ===== */
+.scroll-stack-scroller {
+  position: relative;
+  width: 100%;
+  height: min(80vh, 720px);
+  overflow-y: auto;
+  overflow-x: visible;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: auto;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: scroll-position;
+}
+.scroll-stack-inner {
+  padding: 20vh 2rem 50rem;
+  min-height: 100vh;
+}
+.scroll-stack-list {
+  max-width: 940px;
+  margin: 0 auto;
+}
+.scroll-stack-list .skeleton-card {
+  margin: 30px 0;
+  min-height: 320px;
+}
+.scroll-stack-card {
+  transform-origin: top center;
+  will-change: transform, filter;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  margin: 0;
+  position: relative;
+}
+.scroll-stack-card.item-card {
+  height: auto;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.scroll-stack-end {
+  width: 100%;
+  height: 1px;
+}
+.scroll-stack-card.item-card:hover {
+  transform: none;
+}
+
 /* ===== ACTIVITY FEED CARD ===== */
 .activity-card {
   background: rgba(255,255,255,0.1);
@@ -425,11 +471,22 @@ html {
 .fade-in-delay-2 { transition-delay: 0.2s; }
 .fade-in-delay-3 { transition-delay: 0.3s; }
 
+/* In the scroll stack, JS owns transforms; keep fade-in as opacity only */
+.scroll-stack-card.fade-in {
+  transform: none;
+  transition: opacity 0.5s ease;
+}
+.scroll-stack-card.fade-in.visible {
+  transform: none;
+}
+
 /* ===== RESPONSIVE TWEAKS ===== */
 @media (max-width: 1200px) {
   .activity-card { max-width: 480px; }
 }
 @media (max-width: 768px) {
+  .scroll-stack-scroller { height: min(70vh, 640px); }
+  .scroll-stack-inner { padding: 16vh 1rem 40rem; }
   .activity-card { padding: 16px; gap: 12px; }
   .activity-card img { width: 40px; height: 40px; }
   .modal-item-img { height: 180px; }

@@ -76,9 +76,21 @@ function seedData() {
 // ===== AUTH =====
 const Auth = {
   register(name, email, password) {
+    const normalizedEmail = email.toLowerCase().trim();
     const users = Store.get('users') || [];
-    if (users.find(u => u.email === email)) return { success: false, error: 'Email already registered' };
-  const user = { id: 'u' + Date.now(), name, email, password, avatar: 'https://i.pravatar.cc/150?u=' + email, bio: '', location: '', joined: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), createdAt: new Date().toISOString(), favorites: [] };
+    if (users.find(u => (u.email || '').toLowerCase() === normalizedEmail)) return { success: false, error: 'Email already registered' };
+    const user = {
+      id: 'u' + Date.now(),
+      name,
+      email: normalizedEmail,
+      password,
+      avatar: 'https://i.pravatar.cc/150?u=' + normalizedEmail,
+      bio: '',
+      location: '',
+      joined: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+      createdAt: new Date().toISOString(),
+      favorites: []
+    };
     users.push(user);
     Store.set('users', users);
     Store.setSession(user);
