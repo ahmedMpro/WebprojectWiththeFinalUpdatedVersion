@@ -455,7 +455,7 @@
             fromName: me.name, toName: targetUser ? targetUser.name : '', status: 'pending', createdAt: Date.now() });
           SwapifyStore.set('swaps', swaps);
           if (window.SwapifyChat) SwapifyChat.send(me.id, skill.userId, "Hi! I'm interested in swapping for your skill: " + skill.offers);
-          if (window.SwapifyUI) window.SwapifyUI.toast('Swap requested! Opening chat 💬', 'success');
+          if (window.SwapifyUI) window.SwapifyUI.toast('Swap requested! Opening chat 💬', 'success', 'skill-details.html?id=' + sid);
           setTimeout(function() { window.location.href = 'messages.html?partner=' + skill.userId; }, 800);
           return;
         }
