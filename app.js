@@ -1438,3 +1438,12 @@ window.SwapifyValidate = Validate;
 window.SwapifyAdmin = Admin;
 
 })();
+
+// ===== AUTO-LOAD CART ENGINE ON ALL PAGES =====
+(function() {
+  if (!document.querySelector('script[src="cart.js"]')) {
+    var cartScript = document.createElement('script');
+    cartScript.src = 'cart.js';
+    document.body.appendChild(cartScript);
+  }
+})();

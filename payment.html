@@ -156,19 +156,9 @@
             </div>
           </div>
           <label class="flex items-center gap-2 mt-4 cursor-pointer" style="font-size: 14px; font-weight: 500;">
-            <input type="checkbox" style="width:16px;height:16px;accent-color:var(--primary)" checked> Save card securely to wallet for future use
+            <input type="checkbox" id="saveCardCheckbox" style="width:16px;height:16px;accent-color:var(--primary)" checked> Save card securely to wallet for future use
           </label>
         </div>
-
-        <!-- Option 2: Points -->
-        <label class="payment-option" id="optPointsLabel">
-          <input type="radio" name="payment_method" value="points" onchange="togglePaymentMethod()">
-          <div class="payment-option-details">
-            <div class="payment-option-title">Swapify Points</div>
-            <div class="payment-option-desc">Use your wallet balance</div>
-          </div>
-          <div class="points-balance" style="font-size: 14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> <span id="labelPointsBal">1,250</span></div>
-        </label>
         
         <!-- Option 3: COD -->
         <label class="payment-option" id="optCodLabel">
@@ -332,21 +322,49 @@
     subtotal = itemInfo.price;
 
     function init() {
+      const isCartCheckout = urlParams.get('cart') === 'true';
+
       // Set points display
-      document.getElementById('labelPointsBal').textContent = userPoints.toLocaleString();
       document.getElementById('boxPointsBal').textContent = userPoints.toLocaleString();
 
-      // Set order item HTML
-      document.getElementById('orderItems').innerHTML = `
-        <div class="order-item">
-          <img src="${itemInfo.img}" alt="${itemInfo.name}">
-          <div class="order-item-info">
-            <div class="order-item-title">${itemInfo.name}</div>
-            <div class="order-item-qty">Qty: 1 • Condition: ${itemInfo.condition}</div>
-            <div class="order-item-price">$${itemInfo.price.toFixed(2)}</div>
+      // Bug Fix 3: Cart total calculation — load all items for cart checkout
+      if (isCartCheckout && window.SwapifyCart) {
+        const cartItems = SwapifyCart.getAll();
+        if (cartItems.length > 0) {
+          subtotal = cartItems.reduce(function(sum, i) { return sum + i.price * i.qty; }, 0);
+          document.getElementById('orderItems').innerHTML = cartItems.map(function(item) {
+            return '<div class="order-item">' +
+              '<img src="' + item.img + '" alt="' + item.name + '">' +
+              '<div class="order-item-info">' +
+              '<div class="order-item-title">' + item.name + '</div>' +
+              '<div class="order-item-qty">Qty: ' + item.qty + ' &bull; ' + item.condition + '</div>' +
+              '<div class="order-item-price">$' + (item.price * item.qty).toFixed(2) + '</div>' +
+              '</div></div>';
+          }).join('');
+        } else {
+          window.location.href = 'cart.html';
+          return;
+        }
+      } else {
+        // Bug Fix 5: If Buy Now for an item already in cart, remove it from cart to prevent duplicate
+        if (dealId && window.SwapifyCart) {
+          const cartItems = SwapifyCart.getAll();
+          const inCart = cartItems.find(function(i) { return i.id === dealId; });
+          if (inCart) SwapifyCart.remove(dealId);
+        }
+
+        // Single item (Buy Now) flow
+        document.getElementById('orderItems').innerHTML = `
+          <div class="order-item">
+            <img src="${itemInfo.img}" alt="${itemInfo.name}">
+            <div class="order-item-info">
+              <div class="order-item-title">${itemInfo.name}</div>
+              <div class="order-item-qty">Qty: 1 • Condition: ${itemInfo.condition}</div>
+              <div class="order-item-price">$${itemInfo.price.toFixed(2)}</div>
+            </div>
           </div>
-        </div>
-      `;
+        `;
+      }
 
       // Smart Suggestion Logic
       const maxPointsValue = userPoints * pointValue;
@@ -382,21 +400,27 @@
         if(radio.checked) {
           method = radio.value;
           document.getElementById('optCardLabel').classList.toggle('selected', method === 'card');
-          document.getElementById('optPointsLabel').classList.toggle('selected', method === 'points');
           document.getElementById('optCodLabel').classList.toggle('selected', method === 'cod');
         }
       });
 
       const cardForm = document.getElementById('cardForm');
-      if (method === 'card') {
-        cardForm.classList.add('active');
+      if (method === 'cod') {
+        // If 50% split plan is active and user selects COD, block it
+        if (plan === 'split') {
+          if (window.SwapifyUI) window.SwapifyUI.toast('Cash on Delivery is not allowed for the 50% Advance plan. Please use Credit/Debit Card.', 'error');
+          else alert('Cash on Delivery is not allowed for the 50% Advance plan. Please use Credit/Debit Card.');
+          // Revert to card
+          document.querySelector('input[value="card"]').checked = true;
+          method = 'card';
+          document.getElementById('optCodLabel').classList.remove('selected');
+          document.getElementById('optCardLabel').classList.add('selected');
+          cardForm.classList.add('active');
+        } else {
+          cardForm.classList.remove('active');
+        }
       } else {
-        cardForm.classList.remove('active');
-      }
-
-      // If points method selected, automatically check use points
-      if (method === 'points') {
-        document.getElementById('usePoints').checked = true;
+        cardForm.classList.add('active');
       }
       
       calculateTotals();
@@ -473,7 +497,6 @@
       }
 
       document.getElementById('summTotal').textContent = `$${finalTotal.toFixed(2)}`;
-      document.getElementById('btnAmount').textContent = `- $${finalTotal.toFixed(2)}`;
     }
 
     // Validation
@@ -500,6 +523,13 @@
     }
 
     function initiatePayment() {
+      // Enforce: 50% split plan only allows Credit/Debit Card
+      if (plan === 'split' && method === 'cod') {
+        if (window.SwapifyUI) window.SwapifyUI.toast('Cash on Delivery is not valid for the 50% Advance plan. Please use Credit/Debit Card.', 'error');
+        else alert('Cash on Delivery is not valid for the 50% Advance plan. Please use Credit/Debit Card.');
+        return;
+      }
+
       // Basic validation if card is selected
       if (method === 'card' && finalTotal > 0) {
         const cardNum = document.getElementById('cardNumber').value.replace(/\D/g, '');
@@ -536,9 +566,14 @@
 
       // Show confirmation modal
       const modal = document.getElementById('confModal');
-      document.getElementById('confItem').textContent = itemInfo.name;
+      const isCartCheckout = new URLSearchParams(window.location.search).get('cart') === 'true';
+      const cartItems = (isCartCheckout && window.SwapifyCart) ? SwapifyCart.getAll() : [];
+      const displayName = (isCartCheckout && cartItems.length > 0)
+        ? cartItems[0].name + (cartItems.length > 1 ? ` + ${cartItems.length - 1} more` : '')
+        : itemInfo.name;
+      document.getElementById('confItem').textContent = displayName;
       
-      let methodText = method === 'card' ? 'Credit/Debit Card' : (method === 'points' ? 'Swapify Points' : 'Cash on Delivery');
+      let methodText = method === 'card' ? 'Credit/Debit Card' : 'Cash on Delivery';
       document.getElementById('confMethod').textContent = methodText;
       
       document.getElementById('confPlan').textContent = plan === 'full' ? 'Full Amount' : '50% Advance';
@@ -563,22 +598,74 @@
         
         // Show Success
         const orderNum = Math.floor(100000 + Math.random() * 900000);
+        const isCartCheckout = new URLSearchParams(window.location.search).get('cart') === 'true';
+        const cartItems = (isCartCheckout && window.SwapifyCart) ? SwapifyCart.getAll() : [];
 
-        // Save to History
+        // Save to History with 3-stage status
         const history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+        let orderItemName = itemInfo.name;
+        let orderItemImg = itemInfo.img;
+        let orderQty = 1;
+        // Bug Fix 5: Build full items snapshot for the order record
+        let orderItemsSnapshot = [];
+        if (isCartCheckout && cartItems.length > 0) {
+          orderItemName = cartItems[0].name + (cartItems.length > 1 ? ` + ${cartItems.length - 1} more item(s)` : '');
+          orderItemImg = cartItems[0].img;
+          orderQty = cartItems.reduce((s, i) => s + i.qty, 0);
+          // Full snapshot of all cart items
+          orderItemsSnapshot = cartItems.map(function(i) {
+            return { id: i.id, name: i.name, qty: i.qty, price: i.price, img: i.img, condition: i.condition || '' };
+          });
+        } else {
+          // Single Buy Now item snapshot
+          orderItemsSnapshot = [{ id: dealId || '0', name: itemInfo.name, qty: 1, price: itemInfo.price, img: itemInfo.img, condition: itemInfo.condition || '' }];
+        }
         const newOrder = {
           id: `SWP-${orderNum}`,
-          itemName: itemInfo.name,
-          itemImg: itemInfo.img,
-          qty: 1,
+          itemName: orderItemName,
+          itemImg: orderItemImg,
+          qty: orderQty,
+          items: orderItemsSnapshot,
           totalPrice: finalTotal,
           paymentMethod: method,
           paymentPlan: plan,
-          status: 'Completed',
-          date: new Date().toISOString()
+          status: 'Preparing',
+          date: new Date().toISOString(),
+          estimatedDelivery: '25–35 mins'
         };
         history.push(newOrder);
         localStorage.setItem('purchaseHistory', JSON.stringify(history));
+
+        // Save card dynamically to wallet if checkbox is checked
+        if (method === 'card') {
+          const saveCardCheckbox = document.getElementById('saveCardCheckbox');
+          if (saveCardCheckbox && saveCardCheckbox.checked) {
+            const cardNum = document.getElementById('cardNumber').value;
+            const cardName = document.getElementById('cardName').value;
+            const cardExpiry = document.getElementById('cardExpiry').value;
+            const last4 = cardNum.replace(/\s/g,'').slice(-4);
+            const savedCards = JSON.parse(localStorage.getItem('savedCards') || '[]');
+            const alreadySaved = savedCards.some(c => c.last4 === last4);
+            if (!alreadySaved && last4.length === 4) {
+              savedCards.push({ cardName: cardName || 'Cardholder', last4, expiry: cardExpiry, savedAt: new Date().toISOString() });
+              localStorage.setItem('savedCards', JSON.stringify(savedCards));
+            }
+          }
+        }
+
+        // Bug Fix 4: Reduce persistent stock for each purchased item
+        if (isCartCheckout && window.SwapifyCart) {
+          cartItems.forEach(function(item) {
+            SwapifyCart.reduceStock(item.id, item.qty);
+          });
+        } else if (dealId && window.SwapifyCart) {
+          SwapifyCart.reduceStock(dealId, 1);
+        }
+
+        // Clear cart if this was a cart checkout
+        if (isCartCheckout && window.SwapifyCart) {
+          SwapifyCart.clear();
+        }
 
         // Update Wallet Points
         let currentWalletPoints = parseInt(localStorage.getItem('walletPoints'));
@@ -593,6 +680,12 @@
           currentWalletPoints += Math.floor(finalTotal * 10);
         }
         localStorage.setItem('walletPoints', currentWalletPoints);
+
+        // Notifications
+        if (window.SwapifyUI) {
+          window.SwapifyUI.toast(`Order #SWP-${orderNum} placed successfully! 🎉`, 'success');
+          window.SwapifyUI.toast(`Payment of $${finalTotal.toFixed(2)} confirmed ✓`, 'success');
+        }
 
         document.getElementById('orderNum').textContent = `SWP-${orderNum}`;
         document.getElementById('successModal').classList.add('active');
