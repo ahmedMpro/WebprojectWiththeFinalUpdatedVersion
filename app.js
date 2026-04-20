@@ -896,7 +896,16 @@ document.addEventListener('DOMContentLoaded', function() {
         var result = Auth.register(name.value.trim(), email.value.trim(), password.value);
         UI.setLoading(submitBtn, false);
         if (result.success) { UI.toast('Account created! Welcome! 🎉', 'success'); setTimeout(function() { window.location.href = 'onboarding.html'; }, 1000); }
-        else { UI.toast(result.error, 'error'); UI.shake(registerForm); }
+        else {
+          UI.toast(result.error, 'error');
+          UI.shake(registerForm);
+          // Show inline error on the email field for duplicate-email case
+          if (result.error && result.error.toLowerCase().includes('email')) {
+            var emailErrEl = document.getElementById('regEmailErr');
+            if (emailErrEl) emailErrEl.textContent = result.error;
+            if (email) { email.classList.add('invalid'); email.classList.remove('valid'); }
+          }
+        }
       }, 800);
     });
   }
