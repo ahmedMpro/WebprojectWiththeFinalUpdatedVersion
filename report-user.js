@@ -5,9 +5,7 @@
 // ============================================================
 (function () {
   'use strict';
-/**
- * 
- */
+
   /* ── COUNTRY CODES ──────────────────────────────────────── */
   var countryCodes = [
     { code: '+1',   label: 'US +1',   minLen: 10, maxLen: 10 },
@@ -60,6 +58,26 @@
     return digits.length >= cc.minLen && digits.length <= cc.maxLen;
   }
 
+  /* Keeps the phone field digits-only without changing the validation rules */
+  function sanitizePhoneValue(value) {
+    return (value || '').replace(/\D/g, '');
+  }
+
+  function sanitizePhoneInput(input) {
+    var nextValue = sanitizePhoneValue(input.value);
+    if (input.value === nextValue) return;
+
+    var cursor = typeof input.selectionStart === 'number' ? input.selectionStart : null;
+    var digitsBeforeCursor = cursor === null ? null : sanitizePhoneValue(input.value.slice(0, cursor)).length;
+
+    input.value = nextValue;
+
+    if (cursor !== null && typeof input.setSelectionRange === 'function') {
+      var nextCursor = Math.min(digitsBeforeCursor, nextValue.length);
+      input.setSelectionRange(nextCursor, nextCursor);
+    }
+  }
+
   function el(tag, cls, html) {
     var e = document.createElement(tag);
     if (cls) e.className = cls;
@@ -104,7 +122,7 @@
         '<div class="form-group"><label for="report-phone">Phone Number <span style="color:var(--primary)">*</span></label>' +
           '<div class="report-field-row" style="gap:8px">' +
             '<div class="select-wrap" style="flex:0 0 110px"><select id="report-cc" class="input" aria-label="Country code">' + ccOptions + '</select></div>' +
-            '<input type="tel" id="report-phone" class="input" placeholder="555 123 4567" required aria-label="Phone number" style="flex:1">' +
+            '<input type="tel" id="report-phone" class="input" placeholder="555 123 4567" required aria-label="Phone number" inputmode="numeric" autocomplete="tel-national" style="flex:1">' +
           '</div>' +
           '<span class="form-error" id="report-phone-err"></span>' +
         '</div>' +
@@ -318,7 +336,35 @@
       document.getElementById('report-phone-err').textContent = digits.length > 0 && !valid ? 'Enter a valid phone number (' + hint + ')' : '';
       checkFormValidity();
     }
-    phoneEl.addEventListener('input', validatePhone);
+    phoneEl.addEventListener('keydown', function (e) {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.key.length === 1 && !/^[0-9]$/.test(e.key)) e.preventDefault();
+    });
+    phoneEl.addEventListener('paste', function (e) {
+      var clipboard = e.clipboardData || window.clipboardData;
+      var pastedText = clipboard ? clipboard.getData('text') : '';
+      var digits = sanitizePhoneValue(pastedText);
+      e.preventDefault();
+
+      if (!digits) return;
+
+      var start = typeof phoneEl.selectionStart === 'number' ? phoneEl.selectionStart : phoneEl.value.length;
+      var end = typeof phoneEl.selectionEnd === 'number' ? phoneEl.selectionEnd : phoneEl.value.length;
+      var before = sanitizePhoneValue(phoneEl.value.slice(0, start));
+      var after = sanitizePhoneValue(phoneEl.value.slice(end));
+
+      phoneEl.value = before + digits + after;
+      if (typeof phoneEl.setSelectionRange === 'function') {
+        var caret = before.length + digits.length;
+        phoneEl.setSelectionRange(caret, caret);
+      }
+
+      validatePhone();
+    });
+    phoneEl.addEventListener('input', function () {
+      sanitizePhoneInput(phoneEl);
+      validatePhone();
+    });
     ccSelect.addEventListener('change', validatePhone); // re-validate when country changes
 
     // Date validation — Bug #4: must be between account creation and today
