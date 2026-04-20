@@ -132,7 +132,7 @@ const Validate = {
 // ===== UI HELPERS =====
 const UI = {
   // Toast system
-  toast(message, type) {
+  toast(message, type, link) {
     type = type || 'info';
     let container = document.querySelector('.toast-container');
     if (!container) { container = document.createElement('div'); container.className = 'toast-container'; document.body.appendChild(container); }
@@ -142,6 +142,22 @@ const UI = {
     toast.innerHTML = '<span style="font-size:18px">' + (icons[type] || 'ℹ') + '</span><span>' + message + '</span><span class="toast-close" onclick="this.parentElement.remove()">✕</span>';
     container.appendChild(toast);
     setTimeout(function() { toast.style.opacity = '0'; toast.style.transform = 'translateX(100px)'; setTimeout(function() { toast.remove(); }, 300); }, 4000);
+
+    const user = Auth.currentUser();
+    if (user && (type === 'error' || type === 'warning' || type === 'info' || type === 'success')) {
+      const notifs = Store.get('notifications') || [];
+      notifs.push({
+        id: 'n' + Date.now() + Math.random().toString(36).slice(2),
+        userId: user.id,
+        type: 'alert',
+        content: message,
+        link: link || '',
+        isRead: false,
+        createdAt: Date.now()
+      });
+      Store.set('notifications', notifs);
+      if (typeof this.updateNav === 'function') this.updateNav();
+    }
   },
 
   // Modal
@@ -188,9 +204,29 @@ const UI = {
     // Update notification badge
     if (user) {
       const notifs = (Store.get('notifications') || []).filter(function(n) { return n.userId === user.id && !n.isRead; });
+      
+      const notifBtns = document.querySelectorAll('a[href="notifications.html"], #notifBtn');
+      notifBtns.forEach(function(btn) {
+        btn.style.position = 'relative';
+        if (!btn.querySelector('.notification-dot')) {
+          const dot = document.createElement('span');
+          dot.className = 'notification-dot';
+          btn.appendChild(dot);
+        }
+      });
+
       const dots = document.querySelectorAll('.notification-dot');
       dots.forEach(function(d) { d.style.display = notifs.length > 0 ? 'block' : 'none'; });
     }
+  }
+};
+
+// Override native alert to use UI.toast
+window.alert = function(msg) {
+  if (typeof UI !== 'undefined' && UI.toast) {
+    UI.toast(msg, 'warning');
+  } else {
+    console.warn('Alert:', msg);
   }
 };
 
@@ -537,6 +573,13 @@ document.addEventListener('DOMContentLoaded', function() {
   var savedTheme = localStorage.getItem('swapify_theme');
   if (savedTheme === 'dark') { document.documentElement.classList.add('dark'); var btn = document.getElementById('themeToggle'); if (btn) btn.textContent = '☀️'; }
 
+  // Ensure notification buttons have IDs
+  document.querySelectorAll('.header-actions button:not([id])').forEach(function(btn) {
+    if (btn.innerHTML.includes('M6 8a6')) {
+      btn.id = 'notifBtn';
+    }
+  });
+
   // Update nav for logged in user
   UI.updateNav();
 
@@ -570,26 +613,41 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.btn').forEach(function(btn) { btn.addEventListener('click', UI.addRipple); });
 
   // ===== FAVORITES / HEART BUTTONS =====
+  // Set initial active state for static cards
   document.querySelectorAll('.item-card-fav').forEach(function(btn) {
     var card = btn.closest('.item-card') || btn.closest('[data-item-id]');
     var itemId = card ? card.dataset.itemId : null;
     if (!itemId) {
-      // Try to get from card title for static cards
       var title = card ? (card.querySelector('.item-card-title') || {}).textContent : '';
-      var items = Store.get('items') || [];
-      var match = items.find(function(i) { return i.title === title; });
+      var items = [].concat(Store.get('items') || [], Store.get('objects') || [], Store.get('deals') || [], Store.get('skills') || []);
+      var match = items.find(function(i) { return (i.title || i.name) === title; });
       if (match) itemId = match.id;
+      if (!itemId && title) itemId = 'static_' + title.replace(/\s+/g, '_').toLowerCase();
     }
     if (itemId && Favorites.isFavorited(itemId)) { btn.classList.add('active'); }
-    btn.addEventListener('click', function(e) {
-      e.preventDefault(); e.stopPropagation();
-      if (!itemId) return;
-      var isFav = Favorites.toggle(itemId);
-      btn.classList.toggle('active', isFav);
-      btn.classList.add('heart-pop');
-      setTimeout(function() { btn.classList.remove('heart-pop'); }, 300);
-      UI.toast(isFav ? 'Added to favorites ❤️' : 'Removed from favorites', isFav ? 'success' : 'info');
-    });
+  });
+  // Use event delegation for dynamically added cards
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.item-card-fav');
+    if (!btn) return;
+    e.preventDefault(); e.stopPropagation();
+    
+    var card = btn.closest('.item-card') || btn.closest('[data-item-id]');
+    var itemId = card ? card.dataset.itemId : null;
+    if (!itemId) {
+      var title = card ? (card.querySelector('.item-card-title') || {}).textContent : '';
+      var items = [].concat(Store.get('items') || [], Store.get('objects') || [], Store.get('deals') || [], Store.get('skills') || []);
+      var match = items.find(function(i) { return (i.title || i.name) === title; });
+      if (match) itemId = match.id;
+      if (!itemId && title) itemId = 'static_' + title.replace(/\s+/g, '_').toLowerCase();
+    }
+    
+    if (!itemId) return;
+    var isFav = Favorites.toggle(itemId);
+    btn.classList.toggle('active', isFav);
+    btn.classList.add('heart-pop');
+    setTimeout(function() { btn.classList.remove('heart-pop'); }, 300);
+    UI.toast(isFav ? 'Added to favorites ❤️' : 'Removed from favorites', isFav ? 'success' : 'info');
   });
 
   // ===== SWAP REQUEST BUTTONS =====
@@ -602,7 +660,12 @@ document.addEventListener('DOMContentLoaded', function() {
       btn.style.background = 'var(--success)';
       btn.style.color = '#fff';
       btn.disabled = true;
-      UI.toast('Swap request sent! 🔄', 'success');
+      
+      var itemId = btn.dataset.itemId || btn.closest('[data-item-id]')?.dataset.itemId || new URLSearchParams(window.location.search).get('id');
+      var typeStr = window.location.pathname.includes('skill') ? 'skill' : 'item';
+      var link = itemId ? typeStr + '-details.html?id=' + itemId : window.location.href;
+      
+      UI.toast('Swap request sent! 🔄', 'success', link);
       setTimeout(function() { btn.textContent = original; btn.style.background = ''; btn.style.color = ''; btn.disabled = false; }, 3000);
     });
   });

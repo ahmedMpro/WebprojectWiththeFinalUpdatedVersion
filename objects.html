@@ -205,6 +205,7 @@
         var badgeStyleAttr = o.badgeStyle ? ' style="' + o.badgeStyle + '"' : '';
         var badgeClassAttr = o.badgeClass ? ' ' + o.badgeClass : '';
         
+        var isFav = window.SwapifyFavorites && window.SwapifyFavorites.isFavorited(o.id) ? ' active' : '';
         div.innerHTML =
           '<div class="item-card-img">' +
             '<img class="card-img" src="' + o.img + '" alt="' + o.name + '">' +
@@ -212,7 +213,7 @@
               '<span class="badge badge-white"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Object</span>' +
               '<span class="badge' + badgeClassAttr + '"' + badgeStyleAttr + '>' + o.condition + '</span>' +
             '</div>' +
-            '<button class="item-card-fav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button>' +
+            '<button class="item-card-fav' + isFav + '" data-item-id="' + o.id + '"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button>' +
           '</div>' +
           '<div class="item-card-body">' +
             '<h3 class="item-card-title" style="font-size:20px;margin-bottom:12px">' + o.name + '</h3>' +
