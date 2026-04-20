@@ -532,16 +532,6 @@ function toggleTheme() {
   if (btn) btn.textContent = isDark ? '☀️' : '🌙';
 }
 
-// ===== LANG =====
-function toggleLang() {
-  const html = document.documentElement;
-  const btn = document.getElementById('langToggle');
-  if (!btn) return;
-  const isArabic = html.dir === 'rtl';
-  html.dir = isArabic ? 'ltr' : 'rtl';
-  html.lang = isArabic ? 'en' : 'ar';
-  btn.textContent = isArabic ? 'EN' : 'AR';
-}
 
 // ===== MOBILE MENU =====
 function toggleMobileMenu() {
@@ -1020,7 +1010,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Expose globals needed by inline handlers
 window.toggleTheme = toggleTheme;
-window.toggleLang = toggleLang;
 window.toggleMobileMenu = toggleMobileMenu;
 window.updatePhotoCount = updatePhotoCount;
 window.escapeHtml = escapeHtml;

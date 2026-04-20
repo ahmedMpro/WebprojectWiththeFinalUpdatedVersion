@@ -58,6 +58,7 @@
             </div>
             <a href="messages.html" class="btn btn-outline btn-sm">Message</a>
           </div>
+          <button class="btn btn-ghost btn-sm" id="reportSellerBtn" style="margin-top:12px;color:var(--muted-fg);width:100%" aria-label="Report this seller"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg> Report this seller</button>
 
           <!-- Actions -->
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -139,6 +140,7 @@
   <nav class="bottom-nav"><a href="index.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a><a href="skills.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg><span>Skills</span></a><a href="add.html" class="add-btn"><div class="add-btn-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div></a><a href="messages.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg><span>Messages</span></a><a href="profile.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg><span>Profile</span></a></nav>
 
   <script src="app.js"></script>
+  <script src="report-user.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       var params = new URLSearchParams(window.location.search);
@@ -160,6 +162,11 @@
       document.title = item.name + ' — Swapify';
       // Hide price area for objects
       document.getElementById('detailPriceArea').style.display = 'none';
+      // Report seller button
+      var reportBtn = document.getElementById('reportSellerBtn');
+      if (reportBtn) reportBtn.addEventListener('click', function() {
+        SwapifyReport.open({ reportedUserId: item.userId || '', reportedUserName: item.ownerName, relatedListing: item.name, context: 'item-details' });
+      });
       // Favorite button
       var favBtn = document.getElementById('detailFavBtn');
       if (SwapifyFavorites.isFavorited(itemId)) { favBtn.innerHTML = '❤️ Favorited'; favBtn.style.borderColor = '#FF4D4D'; favBtn.style.color = '#FF4D4D'; }
