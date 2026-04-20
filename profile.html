@@ -124,7 +124,7 @@
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
           </div>
           
-          <div style="font-family: monospace; font-size: 22px; letter-spacing: 3px; margin-bottom: 16px; position:relative; z-index:1; color: white;">
+          <div id="walletCardNumber" style="font-family: monospace; font-size: 22px; letter-spacing: 3px; margin-bottom: 16px; position:relative; z-index:1; color: white;">
             **** **** **** 4242
           </div>
           
@@ -135,7 +135,7 @@
             </div>
             <div>
               <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.6); margin-bottom: 4px;">Expires</div>
-              <div style="font-size: 14px; font-weight: 500; letter-spacing: 1px; color: white;">12/28</div>
+              <div id="walletCardExpiry" style="font-size: 14px; font-weight: 500; letter-spacing: 1px; color: white;">12/28</div>
             </div>
           </div>
         </div>
@@ -336,34 +336,128 @@
         // ── Dynamic History and Wallet ─────────────────────────
         if (isMe) {
           const history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
-          
+          const isAdmin = SwapifyAuth.isLoggedIn() && SwapifyAuth.currentUser() && SwapifyAuth.currentUser().role === 'admin';
+
+          // Helper: 3-stage status stepper HTML
+          function statusStepperHtml(status) {
+            const stages = ['Preparing', 'Out for Delivery', 'Delivered'];
+            const idx = stages.indexOf(status);
+            const colors = { 'Preparing': '#D97706', 'Out for Delivery': '#2563EB', 'Delivered': 'var(--success)' };
+            const color = colors[status] || 'var(--muted-fg)';
+            let html = '<div style="display:flex;align-items:center;gap:4px;margin:10px 0;">';
+            stages.forEach(function(s, i) {
+              const active = i <= idx;
+              html += '<div style="display:flex;align-items:center;gap:4px;">';
+              html += '<div style="width:10px;height:10px;border-radius:50%;background:' + (active ? color : 'var(--border)') + ';flex-shrink:0;"></div>';
+              html += '<span style="font-size:11px;font-weight:' + (s === status ? '700' : '500') + ';color:' + (active ? color : 'var(--muted-fg)') + ';">' + s + '</span>';
+              if (i < stages.length - 1) html += '<div style="width:24px;height:2px;background:' + (i < idx ? color : 'var(--border)') + ';margin:0 2px;"></div>';
+              html += '</div>';
+            });
+            html += '</div>';
+            return html;
+          }
+
+          // Save order status update
+          window.updateOrderStatus = function(orderId, newStatus) {
+            const h = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+            const o = h.find(function(x) { return x.id === orderId; });
+            if (o) {
+              o.status = newStatus;
+              localStorage.setItem('purchaseHistory', JSON.stringify(h));
+              if (window.SwapifyUI) window.SwapifyUI.toast('Order ' + orderId + ' status updated to ' + newStatus, 'success');
+              location.reload();
+            }
+          };
+
+          // Delete order
+          window.deleteOrder = function(orderId) {
+            const h = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+            const o = h.find(function(x) { return x.id === orderId; });
+            if (!o) return;
+            if (o.status === 'Out for Delivery' || o.status === 'Delivered') {
+              if (window.SwapifyUI) window.SwapifyUI.toast('Cannot delete an order that has been shipped.', 'error');
+              else alert('Cannot delete an order that has been shipped.');
+              return;
+            }
+            const updated = h.filter(function(x) { return x.id !== orderId; });
+            localStorage.setItem('purchaseHistory', JSON.stringify(updated));
+            if (window.SwapifyUI) window.SwapifyUI.toast('Order deleted.', 'info');
+            const el = document.getElementById('order-' + orderId);
+            if (el) el.remove();
+            if (updated.length === 0) location.reload();
+          };
+
           // Populate History Tab
           const historyTab = document.getElementById('tab-history');
           if (historyTab) {
             if (history.length === 0) {
               historyTab.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted-fg)" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div><h3>No history yet</h3><p>Start exploring the community to find your next great deal!</p><a href="deals.html" class="btn btn-primary">Explore Deals</a></div>';
             } else {
-              let hHtml = '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;"><h2 style="font-size:24px;font-weight:700; font-family: var(--font-heading);">Purchase History</h2><div style="font-size:14px; color:var(--muted-fg);">Showing all orders</div></div><div style="display:flex;flex-direction:column;gap:16px">';
+              let hHtml = '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;"><h2 style="font-size:24px;font-weight:700; font-family: var(--font-heading);">Purchase History</h2></div><div style="display:flex;flex-direction:column;gap:16px">';
               history.slice().reverse().forEach(function(order) {
                 const date = new Date(order.date).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
                 const methodStr = order.paymentMethod === 'card' ? 'Credit/Debit Card' : (order.paymentMethod === 'points' ? 'Swapify Points' : 'Cash on Delivery');
                 const planStr = order.paymentPlan === 'split' ? '50% Split' : 'Full Payment';
-                hHtml += `
-                  <div class="card card-body" style="display:flex; gap:20px; align-items: center; border: 1px solid var(--border); transition: var(--transition);">
-                    <img src="${order.itemImg}" alt="${order.itemName}" style="width:90px;height:90px;border-radius:var(--radius-sm);object-fit:cover; border: 1px solid var(--border);">
-                    <div style="flex:1;">
-                      <div style="display:flex; justify-content:space-between; margin-bottom:4px; align-items:flex-start;">
-                        <h3 style="font-weight:700; font-size:16px;">${order.itemName}</h3>
-                        <span class="badge badge-success" style="background:rgba(16,185,129,.1); color:var(--success); border: 1px solid var(--success);">${order.status}</span>
-                      </div>
-                      <p style="font-size:13px; color:var(--muted-fg); margin-bottom:12px;">Order ID: ${order.id} &bull; ${date}</p>
-                      <div style="display:flex; gap:16px; font-size:14px; flex-wrap:wrap;">
-                        <span style="background:var(--muted); padding:4px 8px; border-radius:4px;"><strong>Total:</strong> $${order.totalPrice.toFixed(2)}</span>
-                        <span style="background:var(--muted); padding:4px 8px; border-radius:4px;"><strong>Method:</strong> ${methodStr} (${planStr})</span>
-                        <span style="background:var(--muted); padding:4px 8px; border-radius:4px;"><strong>Qty:</strong> ${order.qty}</span>
-                      </div>
-                    </div>
-                  </div>`;
+                const canDelete = order.status === 'Preparing';
+                const delivery = order.estimatedDelivery || '25–35 mins';
+
+                hHtml += '<div class="card card-body" id="order-' + order.id + '" style="display:flex; gap:20px; align-items: flex-start; border: 1px solid var(--border); transition: var(--transition);">';
+
+                // Bug Fix 4: Use items[] snapshot for multi-item display
+                const orderItems = (order.items && order.items.length > 0) ? order.items : null;
+                const displayImg = orderItems ? orderItems[0].img : order.itemImg;
+                const displayName = orderItems
+                  ? (orderItems.length > 1 ? orderItems.length + ' items' : orderItems[0].name)
+                  : order.itemName;
+
+                hHtml += '<img src="' + displayImg + '" alt="' + displayName + '" style="width:90px;height:90px;border-radius:var(--radius-sm);object-fit:cover; border: 1px solid var(--border);flex-shrink:0;">';
+                hHtml += '<div style="flex:1;">';
+                hHtml += '<div style="display:flex; justify-content:space-between; margin-bottom:4px; align-items:flex-start;">';
+                hHtml += '<h3 style="font-weight:700; font-size:16px;">' + displayName + '</h3>';
+                hHtml += '</div>';
+                hHtml += '<p style="font-size:13px; color:var(--muted-fg); margin-bottom:4px;">Order ID: ' + order.id + ' &bull; ' + date + '</p>';
+                hHtml += '<p style="font-size:12px; color:var(--muted-fg); margin-bottom:8px;">🚚 Est. delivery: <strong>' + delivery + '</strong></p>';
+                hHtml += statusStepperHtml(order.status);
+
+                // Bug Fix 4: If multi-item, show clickable "Show all items" toggle
+                if (orderItems && orderItems.length > 1) {
+                  hHtml += '<div id="order-items-' + order.id + '" style="display:none;flex-direction:column;gap:8px;margin:8px 0;padding:10px;background:var(--muted);border-radius:var(--radius-sm);">';
+                  orderItems.forEach(function(it) {
+                    hHtml += '<div style="display:flex;align-items:center;gap:10px;">';
+                    hHtml += '<img src="' + it.img + '" alt="' + it.name + '" style="width:36px;height:36px;object-fit:cover;border-radius:4px;flex-shrink:0;">';
+                    hHtml += '<span style="font-size:13px;flex:1;">' + it.name + '</span>';
+                    hHtml += '<span style="font-size:13px;color:var(--muted-fg);">x' + it.qty + '</span>';
+                    hHtml += '<span style="font-size:13px;font-weight:700;color:var(--primary);">$' + (it.price * it.qty).toFixed(2) + '</span>';
+                    hHtml += '</div>';
+                  });
+                  hHtml += '</div>';
+                  hHtml += '<button onclick="(function(id){var el=document.getElementById(\'order-items-\'+id);var open=el.style.display===\'flex\';el.style.display=open?\'none\':\'flex\';this.textContent=open?\'▼ Show all items\':\'▲ Hide items\';})(\''+order.id+'\')" style="font-size:12px;color:var(--primary);background:none;border:none;cursor:pointer;padding:0;margin-bottom:8px;font-weight:600;">▼ Show all items</button>';
+                }
+
+                hHtml += '<div style="display:flex; gap:16px; font-size:14px; flex-wrap:wrap; margin-top:8px;">';
+                hHtml += '<span style="background:var(--muted); padding:4px 8px; border-radius:4px;"><strong>Total:</strong> $' + order.totalPrice.toFixed(2) + '</span>';
+                hHtml += '<span style="background:var(--muted); padding:4px 8px; border-radius:4px;"><strong>Method:</strong> ' + methodStr + ' (' + planStr + ')</span>';
+                hHtml += '<span style="background:var(--muted); padding:4px 8px; border-radius:4px;"><strong>Qty:</strong> ' + order.qty + '</span>';
+                hHtml += '</div>';
+                // Admin status update
+                if (isAdmin) {
+                  hHtml += '<div style="margin-top:12px;display:flex;gap:8px;align-items:center;">';
+                  hHtml += '<label style="font-size:12px;font-weight:600;color:var(--muted-fg);">Admin — Update Status:</label>';
+                  hHtml += '<select onchange="updateOrderStatus(\'' + order.id + '\', this.value)" style="font-size:13px;padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--fg);cursor:pointer;">';
+                  ['Preparing','Out for Delivery','Delivered'].forEach(function(s) {
+                    hHtml += '<option value="' + s + '"' + (order.status === s ? ' selected' : '') + '>' + s + '</option>';
+                  });
+                  hHtml += '</select></div>';
+                }
+                // Delete button — only if not shipped
+                hHtml += '<div style="margin-top:10px;">';
+                if (canDelete) {
+                  hHtml += '<button onclick="deleteOrder(\'' + order.id + '\')" class="btn btn-ghost btn-sm" style="color:var(--error);font-size:13px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg> Delete Order</button>';
+                } else {
+                  hHtml += '<span style="font-size:12px;color:var(--muted-fg);">🔒 Cannot delete — order has been shipped</span>';
+                }
+                hHtml += '</div>';
+                hHtml += '</div></div>';
               });
               hHtml += '</div>';
               historyTab.innerHTML = hHtml;
@@ -377,11 +471,23 @@
           
           const valEl = document.getElementById('walletPointsVal');
           const cashEl = document.getElementById('walletPointsCash');
-          const cardNameEl = document.getElementById('walletCardName');
           
           if(valEl) valEl.textContent = walletPoints.toLocaleString();
           if(cashEl) cashEl.textContent = walletCash;
-          if(cardNameEl && user && user.name) cardNameEl.textContent = user.name;
+
+          // Bug Fix 10: Load saved card dynamically from localStorage
+          const savedCards = JSON.parse(localStorage.getItem('savedCards') || '[]');
+          const cardNameEl = document.getElementById('walletCardName');
+          if (savedCards.length > 0) {
+            const latestCard = savedCards[savedCards.length - 1];
+            if (cardNameEl) cardNameEl.textContent = latestCard.cardName || 'Cardholder';
+            const cardNumEl = document.getElementById('walletCardNumber');
+            const cardExpEl = document.getElementById('walletCardExpiry');
+            if (cardNumEl) cardNumEl.textContent = '**** **** **** ' + latestCard.last4;
+            if (cardExpEl) cardExpEl.textContent = latestCard.expiry;
+          } else if (cardNameEl && user && user.name) {
+            cardNameEl.textContent = user.name;
+          }
 
           const recentContainer = document.getElementById('walletRecentTransactions');
           if (recentContainer) {
