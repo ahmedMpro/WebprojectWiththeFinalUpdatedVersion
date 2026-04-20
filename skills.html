@@ -248,6 +248,25 @@
       </svg><span>Profile</span></a></nav>
 
   <script src="app.js"></script>
+
+  <!-- ═══ OFFER-SKILL MODAL ═══ -->
+  <div id="offerSkillOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(5px);z-index:2000;align-items:center;justify-content:center;padding:16px">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;width:100%;max-width:440px;position:relative;animation:fadeUp .25s ease">
+      <button id="offerSkillClose" style="position:absolute;top:14px;right:16px;background:none;border:none;cursor:pointer;color:var(--muted-fg);font-size:24px;line-height:1;padding:4px">&times;</button>
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:6px">Confirm Your Offer</h3>
+      <p style="font-size:14px;color:var(--muted-fg);margin-bottom:20px">Select one of your skills to offer in exchange.</p>
+      <div class="form-group">
+        <label class="form-label">I Offer (from My Skills) *</label>
+        <select class="input" id="offerSkillSelect"><option value="">— Select a skill —</option></select>
+        <span id="offerSkillErr" style="font-size:12px;color:#ef4444"></span>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:16px">
+        <button class="btn btn-primary" style="flex:1" id="confirmOfferBtn">Confirm &amp; Request Swap</button>
+        <button class="btn btn-ghost" id="offerSkillCancelBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <style>@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}</style>
   <script>
     (function () {
       'use strict';
@@ -435,6 +454,27 @@
       emptyResetBtn.addEventListener('click', resetAll);
 
       /* Card navigation + swap button */
+      var _pendingSwap = null; // stores { sid, skill, targetUser } while modal is open
+
+      var offerOverlay   = document.getElementById('offerSkillOverlay');
+      var offerSelect    = document.getElementById('offerSkillSelect');
+      var offerErr       = document.getElementById('offerSkillErr');
+      var confirmBtn     = document.getElementById('confirmOfferBtn');
+      var offerCloseBtn  = document.getElementById('offerSkillClose');
+      var offerCancelBtn = document.getElementById('offerSkillCancelBtn');
+
+      function closeOfferModal() {
+        offerOverlay.style.display = 'none';
+        _pendingSwap = null;
+      }
+      offerCloseBtn.addEventListener('click', closeOfferModal);
+      offerCancelBtn.addEventListener('click', closeOfferModal);
+      offerOverlay.addEventListener('click', function(e){ if (e.target === offerOverlay) closeOfferModal(); });
+
+      function getMySkills(uid) {
+        try { return JSON.parse(localStorage.getItem('swapify_mySkills_' + uid) || '[]'); } catch(e) { return []; }
+      }
+
       grid.addEventListener('click', function (e) {
         var swapBtn = e.target.closest('.request-swap-btn');
         if (swapBtn) {
@@ -450,17 +490,60 @@
           var swaps = SwapifyStore.get('swaps') || [];
           var dup = swaps.find(function(sw) { return sw.fromUserId === me.id && sw.skillId === sid && sw.status === 'pending'; });
           if (dup) { window.location.href = 'messages.html?partner=' + skill.userId; return; }
+
+          // ── Check user has skills in My Skills ──
+          var mySkills = getMySkills(me.id);
+          if (mySkills.length === 0) {
+            if (window.SwapifyUI) {
+              window.SwapifyUI.toast('You need to add your own skills first! Go to your profile → My Skills.', 'warning');
+            }
+            return;
+          }
+
+          // ── Show offer-skill modal ──
           var targetUser = (SwapifyStore.get('users') || []).find(function(u) { return u.id === skill.userId; });
-          swaps.push({ id: 'sw' + Date.now(), fromUserId: me.id, toUserId: skill.userId, skillId: sid,
-            fromName: me.name, toName: targetUser ? targetUser.name : '', status: 'pending', createdAt: Date.now() });
-          SwapifyStore.set('swaps', swaps);
-          if (window.SwapifyChat) SwapifyChat.send(me.id, skill.userId, "Hi! I'm interested in swapping for your skill: " + skill.offers);
-          if (window.SwapifyUI) window.SwapifyUI.toast('Swap requested! Opening chat 💬', 'success', 'skill-details.html?id=' + sid);
-          setTimeout(function() { window.location.href = 'messages.html?partner=' + skill.userId; }, 800);
+          _pendingSwap = { sid: sid, skill: skill, targetUser: targetUser };
+          // Populate dropdown
+          offerSelect.innerHTML = '<option value="">— Select a skill you have —</option>';
+          mySkills.forEach(function(sk){
+            var opt = document.createElement('option');
+            opt.value = sk.name;
+            opt.textContent = sk.name + ' (' + sk.rating + '★)';
+            offerSelect.appendChild(opt);
+          });
+          offerErr.textContent = '';
+          offerOverlay.style.display = 'flex';
           return;
         }
         var card = e.target.closest('.skill-card');
         if (card) { window.location = 'skill-details.html?id=' + card.dataset.skillId; }
+      });
+
+      confirmBtn.addEventListener('click', function() {
+        if (!_pendingSwap) return;
+        var chosenSkill = offerSelect.value;
+        if (!chosenSkill) { offerErr.textContent = 'Please select a skill you are offering.'; return; }
+        offerErr.textContent = '';
+        var me = SwapifyAuth.currentUser();
+        var swaps = SwapifyStore.get('swaps') || [];
+        swaps.push({
+          id: 'sw' + Date.now(),
+          fromUserId: me.id,
+          toUserId: _pendingSwap.skill.userId,
+          skillId: _pendingSwap.sid,
+          offeredSkill: chosenSkill,
+          fromName: me.name,
+          toName: _pendingSwap.targetUser ? _pendingSwap.targetUser.name : '',
+          status: 'pending',
+          createdAt: Date.now()
+        });
+        SwapifyStore.set('swaps', swaps);
+        if (window.SwapifyChat) SwapifyChat.send(me.id, _pendingSwap.skill.userId,
+          'Hi! I\'d like to offer my "' + chosenSkill + '" skill in exchange for your "' + _pendingSwap.skill.offers + '" skill!');
+        if (window.SwapifyUI) window.SwapifyUI.toast('Swap requested! Opening chat 💬', 'success', 'skill-details.html?id=' + _pendingSwap.sid);
+        var partnerId = _pendingSwap.skill.userId;
+        closeOfferModal();
+        setTimeout(function() { window.location.href = 'messages.html?partner=' + partnerId; }, 800);
       });
 
       /* ── INIT ─────────────────────────────────────────────── */
