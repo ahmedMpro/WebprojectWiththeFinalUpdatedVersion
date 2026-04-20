@@ -53,7 +53,7 @@
       <a href="messages.html" class="btn btn-icon btn-ghost" style="position:relative"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg><span class="notification-dot"></span></a>
       <button class="btn btn-icon btn-ghost"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
       <button class="btn btn-ghost btn-sm rounded-full" id="themeToggle" onclick="toggleTheme()">🌙</button>
-      <a href="profile.html" class="profile-ring"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" alt="Profile"></a>
+      <a href="profile.html" class="profile-ring" id="navProfileRing"><img src="" alt="Profile" id="navProfileImg"></a>
       <button class="mobile-menu-btn btn btn-ghost btn-icon" onclick="toggleMobileMenu()"><svg id="menuIconOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg><svg id="menuIconClose" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
     </div>
   </div><div class="mobile-menu" id="mobileMenu"><a href="index.html">Home</a><a href="skills.html">Swap Skills</a><a href="objects.html">Swap Objects</a><a href="deals.html">Half Price Deals</a><a href="messages.html">Messages</a><a href="profile.html">Profile</a></div></header>
@@ -67,15 +67,15 @@
     <!-- Profile Card -->
     <div class="profile-card fade-in" style="margin-bottom:48px">
       <div class="profile-avatar">
-        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200&h=200" alt="Sarah Jenkins" class="avatar-xl" style="width:160px;height:160px;border-radius:50%;border:4px solid var(--bg);object-fit:cover;box-shadow:var(--shadow-lg)">
+        <img id="profileAvatar" src="" alt="Profile photo" class="avatar-xl" style="width:160px;height:160px;border-radius:50%;border:4px solid var(--bg);object-fit:cover;box-shadow:var(--shadow-lg)">
         <!-- Verified shield — hidden by default; JS shows after 50 swaps -->
         <div class="profile-verified" id="profileVerifiedBadge" style="display:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
       </div>
       <div class="profile-info">
         <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:16px">
           <div>
-            <h1 class="profile-name">Sarah Jenkins</h1>
-            <p class="profile-handle">@sarahj <span style="width:4px;height:4px;border-radius:50%;background:var(--muted-fg);display:inline-block"></span> <span class="item-card-rating" style="font-size:14px"><svg viewBox="0 0 24 24" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> 4.9 (124 swaps)</span></p>
+            <h1 class="profile-name" id="profileName">Loading...</h1>
+            <p class="profile-handle" id="profileHandle"></p>
           </div>
           <div class="flex gap-3">
             <a href="settings.html" class="btn btn-outline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg> Edit Profile</a>
@@ -352,7 +352,11 @@
     }
 
     /* ── Populate basic info ── */
-    var DEFAULT_AVATAR = 'https://i.pravatar.cc/150?u=' + uid;
+    var DEFAULT_AVATAR = (window.SwapifyDefaultAvatar) || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%236366f1\'/%3E%3Ccircle cx=\'50\' cy=\'38\' r=\'18\' fill=\'rgba(255,255,255,0.9)\'/%3E%3Cellipse cx=\'50\' cy=\'85\' rx=\'28\' ry=\'22\' fill=\'rgba(255,255,255,0.9)\'/%3E%3C/svg%3E';
+
+    /* Update nav header avatar */
+    var navImg = document.getElementById('navProfileImg');
+    if (navImg) { navImg.src = (user && user.avatar) ? user.avatar : DEFAULT_AVATAR; }
 
     var nameEl = document.querySelector('.profile-name');
     if (nameEl) nameEl.textContent = user.name || 'Unknown';
@@ -767,60 +771,6 @@
 
   });
   </script>
-
-  <!-- ========== FOOTER ========== -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <a href="index.html" class="logo" style="margin-bottom:8px" aria-label="Swapify Home">
-            <div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div>
-            <span class="logo-text"><span>Swapify</span></span>
-          </a>
-          <p>The cozy community marketplace where you can swap skills, trade items, and grab amazing half-price deals.</p>
-          <div class="footer-social">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on Facebook" class="social-link"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on X" class="social-link"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18"/><path d="M6 6L18 18"/></svg></a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on Instagram" class="social-link"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on LinkedIn" class="social-link"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg></a>
-          </div>
-        </div>
-        <div class="footer-col">
-          <h4>About Swapify</h4>
-          <ul>
-            <li><a href="about.html">About Swapify</a></li>
-            <li><a href="our-story.html">Our Story</a></li>
-            <li><a href="how-it-works.html">How it Works</a></li>
-            <li><a href="sustainability.html">Sustainability</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Community</h4>
-          <ul>
-            <li><a href="guidelines.html">Guidelines</a></li>
-            <li><a href="success-stories.html">Success Stories</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Help Center</h4>
-          <ul>
-            <li><a href="help-center.html">Help Center</a></li>
-            <li><a href="faq.html">FAQ</a></li>
-            <li><a href="contact.html">Contact Support</a></li>
-            <li><a href="trust-safety.html">Trust &amp; Safety</a></li>
-            <li><a href="terms.html">Terms of Service</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>&copy; 2026 Swapify. All rights reserved.</p>
-        <div class="footer-tagline">
-          <span>Less waste. More sharing.</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--primary)" stroke="var(--primary)" stroke-width="2" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-        </div>
-      </div>
-    </div>
-  </footer>
 
 </body>
 </html>
