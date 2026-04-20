@@ -19,9 +19,9 @@
         <div style="display:flex;gap:8px">
           <select id="filterStatus" class="input" style="max-width:160px;appearance:none">
             <option value="">All Skills</option>
-            <option value="approved">Approved</option>
+            <option value="active">Approved</option>
             <option value="pending">Pending</option>
-            <option value="flagged">Flagged</option>
+            <option value="rejected">Rejected</option>
           </select>
         </div>
       </div>
@@ -42,10 +42,10 @@
       grid.innerHTML = '';
       empty.style.display = skills.length ? 'none' : 'block';
       skills.forEach(function(s) {
-        var isApproved = s.approved === true;
-        var isFlagged  = s.flagged === true;
-        var statusLabel = isApproved ? 'Approved' : isFlagged ? 'Flagged' : 'Pending';
-        var statusColor = isApproved ? 'var(--success)' : isFlagged ? '#D97706' : 'var(--primary)';
+        var isApproved = s.status === 'active';
+        var isRejected = s.status === 'rejected';
+        var statusLabel = isApproved ? 'Approved' : isRejected ? 'Rejected' : 'Pending';
+        var statusColor = isApproved ? 'var(--success)' : isRejected ? '#D97706' : 'var(--primary)';
         var card = document.createElement('div');
         card.className = 'card card-body';
         card.style.cssText = 'border-top:4px solid ' + statusColor;
@@ -58,7 +58,7 @@
           '<div style="font-size:13px;color:var(--muted-fg);margin-bottom:16px">Level: ' + escapeHtml(s.level) + ' · ' + escapeHtml(s.location) + '</div>' +
           '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
             '<button class="btn btn-primary btn-sm" data-action="approve" data-sid="' + s.id + '"' + (isApproved?' disabled style="opacity:.5"':'') + '>Approve</button>' +
-            '<button class="btn btn-outline btn-sm" data-action="reject" data-sid="' + s.id + '"' + (isFlagged?' disabled style="opacity:.5"':'') + '>Reject</button>' +
+            '<button class="btn btn-outline btn-sm" data-action="reject" data-sid="' + s.id + '"' + (isRejected?' disabled style="opacity:.5"':'') + '>Reject</button>' +
           '</div>';
         grid.appendChild(card);
       });
@@ -69,9 +69,9 @@
       var f = document.getElementById('filterStatus').value;
       if (!f) return all;
       return all.filter(function(s) {
-        if (f==='approved') return s.approved === true;
-        if (f==='flagged')  return s.flagged  === true;
-        if (f==='pending')  return s.approved !== true && s.flagged !== true;
+        if (f==='active')    return s.status === 'active';
+        if (f==='rejected')  return s.status === 'rejected';
+        if (f==='pending')   return !s.status || s.status === 'pending';
         return true;
       });
     }
