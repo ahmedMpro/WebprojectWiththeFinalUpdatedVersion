@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Reports — Swapify Admin</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header"><div class="container header-inner">
+    <a href="index.html" class="logo"><div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div><span class="logo-text"><span>Swapify</span></span></a>
+    <nav class="nav"><a href="admin.html" class="nav-link">Dashboard</a><a href="admin-users.html" class="nav-link">Users</a><a href="admin-skills.html" class="nav-link">Skills</a><a href="admin-swaps.html" class="nav-link">Swaps</a><a href="admin-reports.html" class="nav-link active">Reports</a></nav>
+    <div class="header-actions"><span class="badge badge-primary" style="font-size:11px">ADMIN</span><button class="btn btn-ghost btn-sm rounded-full" id="themeToggle" onclick="toggleTheme()">🌙</button><button class="btn btn-ghost btn-sm" id="adminLogoutBtn" style="color:#ff6b6b;border:1px solid rgba(255,107,107,.3);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700" onclick="if(confirm('Sign out?'))SwapifyAuth.logout()">⏏ Logout</button><a href="profile.html" class="profile-ring"><img src="https://i.pravatar.cc/150?img=60" alt="Admin"></a></div>
+  </div></header>
+
+  <section class="section" style="padding-top:32px">
+    <div class="container" style="max-width:900px">
+      <div class="flex justify-between items-center" style="margin-bottom:24px;flex-wrap:wrap;gap:12px">
+        <div><h1 style="font-size:28px;font-weight:700;margin-bottom:4px">Reports Management</h1><p style="color:var(--muted-fg)" id="reportCount"></p></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="filterStatus" class="input" style="max-width:160px;appearance:none"><option value="">All</option><option value="open">Open</option><option value="resolved">Resolved</option></select>
+          <button class="btn btn-outline btn-sm" id="addDemoBtn">+ Add Demo Report</button>
+        </div>
+      </div>
+      <div id="reportsList"></div>
+      <div id="reportsEmpty" style="display:none"><div class="empty-state"><div class="empty-state-icon">🚨</div><h3>No reports</h3><p>The community is behaving well!</p></div></div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (!SwapifyAdmin.requireAdmin()) return;
+
+    function render() {
+      var all = SwapifyAdmin.getAllReports();
+      var f = document.getElementById('filterStatus').value;
+      var reports = f ? all.filter(function(r){return r.status===f;}) : all;
+      var list = document.getElementById('reportsList');
+      var empty = document.getElementById('reportsEmpty');
+      document.getElementById('reportCount').textContent = reports.length + ' report' + (reports.length!==1?'s':'');
+      list.innerHTML = '';
+      empty.style.display = reports.length ? 'none' : 'block';
+
+      var users = SwapifyStore.get('users') || [];
+      reports.forEach(function(r) {
+        var reporter = users.find(function(u){return u.id===r.reporterId;});
+        var target   = users.find(function(u){return u.id===r.targetId;});
+        var ago = Math.round((Date.now()-r.createdAt)/60000);
+        var t = ago<60?ago+'m ago':ago<1440?Math.round(ago/60)+'h ago':Math.round(ago/1440)+'d ago';
+        var isOpen = r.status === 'open';
+        var div = document.createElement('div');
+        div.className = 'card card-body';
+        div.style.marginBottom = '16px';
+        div.innerHTML =
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">' +
+            '<div>' +
+              '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
+                '<span class="badge badge-outline" style="text-transform:uppercase;font-size:11px">' + escapeHtml(r.type||'user') + '</span>' +
+                '<span class="badge" style="color:' + (isOpen?'#D97706':'var(--muted-fg)') + ';border-color:' + (isOpen?'#D97706':'var(--border)') + '">' + r.status + '</span>' +
+                '<span style="font-size:12px;color:var(--muted-fg)">' + t + '</span>' +
+              '</div>' +
+              '<p style="font-size:15px;font-weight:600;margin-bottom:4px">' + escapeHtml(r.reason||'No reason given') + '</p>' +
+              '<p style="font-size:13px;color:var(--muted-fg)">Reporter: <strong>' + escapeHtml(reporter?reporter.name:'Unknown') + '</strong> · Target: <strong>' + escapeHtml(target?target.name:r.targetId) + '</strong></p>' +
+            '</div>' +
+            (isOpen ?
+              '<div style="display:flex;gap:8px;flex-shrink:0">' +
+                '<button class="btn btn-ghost btn-sm" data-action="ignore" data-rid="'+r.id+'" data-tid="'+r.targetId+'">Ignore</button>' +
+                '<button class="btn btn-outline btn-sm" data-action="warn" data-rid="'+r.id+'" data-tid="'+r.targetId+'" style="color:#D97706;border-color:#D97706">Warn User</button>' +
+                '<button class="btn btn-primary btn-sm" data-action="ban" data-rid="'+r.id+'" data-tid="'+r.targetId+'">Ban User</button>' +
+              '</div>'
+              : '<span style="font-size:13px;color:var(--muted-fg);padding:4px 0">Action: ' + escapeHtml(r.action||'resolved') + '</span>') +
+          '</div>';
+        list.appendChild(div);
+      });
+    }
+
+    render();
+    document.getElementById('filterStatus').addEventListener('change', render);
+
+    document.getElementById('reportsList').addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      var rid = btn.dataset.rid, tid = btn.dataset.tid, action = btn.dataset.action;
+      if (action==='ban' && !confirm('Ban this user?')) return;
+      SwapifyAdmin.resolveReport(rid, action, tid);
+      var msgs = {ignore:'Report ignored',warn:'Warning sent to user',ban:'User banned'};
+      SwapifyUI.toast(msgs[action]||'Done', action==='ban'?'info':'success');
+      render();
+    });
+
+    document.getElementById('addDemoBtn').addEventListener('click', function() {
+      var users = SwapifyStore.get('users')||[];
+      var nonAdmin = users.filter(function(u){return u.role!=='admin';});
+      if (nonAdmin.length < 2) { SwapifyUI.toast('Not enough users for demo', 'warning'); return; }
+      var reporter = nonAdmin[0], target = nonAdmin[1];
+      SwapifyAdmin.addReport('user', target.id, reporter.id, 'Reported for inappropriate behaviour in chat');
+      SwapifyUI.toast('Demo report added', 'success');
+      render();
+    });
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Your Profile — Swapify</title>
+  <meta name="description" content="Set up your Swapify profile to start swapping skills.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .onboard-step { display:none; }
+    .onboard-step.active { display:block; }
+    .role-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; margin:24px 0; }
+    .role-card { border:2px solid var(--border); border-radius:var(--radius); padding:24px 16px; text-align:center; cursor:pointer; transition:all .2s; }
+    .role-card:hover { border-color:var(--primary); background:rgba(76,175,122,.06); }
+    .role-card.selected { border-color:var(--primary); background:rgba(76,175,122,.12); }
+    .role-card .role-icon { font-size:32px; margin-bottom:8px; }
+    .role-card h3 { font-size:15px; font-weight:700; margin-bottom:4px; }
+    .role-card p { font-size:12px; color:var(--muted-fg); }
+    .skill-chip-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+    .skill-chip { display:inline-flex; align-items:center; gap:6px; background:var(--muted); border-radius:var(--radius-full); padding:4px 12px; font-size:13px; }
+    .skill-chip button { background:none; border:none; cursor:pointer; color:var(--muted-fg); font-size:16px; line-height:1; padding:0; }
+    .progress-bar { display:flex; gap:8px; justify-content:center; margin-bottom:32px; }
+    .progress-dot { width:10px; height:10px; border-radius:50%; background:var(--border); transition:background .3s; }
+    .progress-dot.active { background:var(--primary); }
+  </style>
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card" style="max-width:560px">
+      <a href="index.html" class="logo" style="justify-content:center;margin-bottom:24px">
+        <div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div>
+        <span class="logo-text"><span>Swapify</span></span>
+      </a>
+
+      <!-- Progress dots -->
+      <div class="progress-bar">
+        <div class="progress-dot active" id="dot1"></div>
+        <div class="progress-dot" id="dot2"></div>
+        <div class="progress-dot" id="dot3"></div>
+      </div>
+
+      <!-- STEP 1: Role -->
+      <div class="onboard-step active" id="step1">
+        <h1 style="text-align:center;margin-bottom:8px">Welcome to Swapify! 🎉</h1>
+        <p class="subtitle" style="text-align:center;margin-bottom:24px">What would you like to do?</p>
+        <div class="role-cards">
+          <div class="role-card" id="roleOffer" data-role="offer">
+            <div class="role-icon">🎓</div>
+            <h3>Offer Skills</h3>
+            <p>Teach others what you know</p>
+          </div>
+          <div class="role-card" id="roleRequest" data-role="request">
+            <div class="role-icon">📚</div>
+            <h3>Request Skills</h3>
+            <p>Learn from the community</p>
+          </div>
+          <div class="role-card" id="roleBoth" data-role="both">
+            <div class="role-icon">🔄</div>
+            <h3>Both</h3>
+            <p>Teach and learn</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <button class="btn btn-primary w-full btn-lg" id="step1Next">Continue</button>
+        </div>
+        <p style="text-align:center;margin-top:12px;font-size:13px;color:var(--muted-fg)">
+          <a href="skills.html" id="skipAll" style="color:var(--muted-fg)">Skip for now →</a>
+        </p>
+      </div>
+
+      <!-- STEP 2: Skills -->
+      <div class="onboard-step" id="step2">
+        <h1 style="text-align:center;margin-bottom:8px">Add Your Skills</h1>
+        <p class="subtitle" style="text-align:center;margin-bottom:24px">Tell the community what you can offer and what you want to learn.</p>
+
+        <div id="offeredSection" class="form-group">
+          <label style="font-weight:600">Skills you offer</label>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input type="text" class="input" id="offeredInput" placeholder="e.g. Photography, Spanish..." style="flex:1">
+            <button class="btn btn-primary" type="button" id="addOffered">Add</button>
+          </div>
+          <div class="skill-chip-row" id="offeredChips"></div>
+        </div>
+
+        <div id="wantedSection" class="form-group" style="margin-top:16px">
+          <label style="font-weight:600">Skills you want to learn</label>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input type="text" class="input" id="wantedInput" placeholder="e.g. Guitar, Coding...">
+            <button class="btn btn-primary" type="button" id="addWanted">Add</button>
+          </div>
+          <div class="skill-chip-row" id="wantedChips"></div>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-top:24px">
+          <button class="btn btn-ghost btn-lg" id="step2Back">Back</button>
+          <button class="btn btn-primary w-full btn-lg" id="step2Next">Continue</button>
+        </div>
+        <p style="text-align:center;margin-top:12px;font-size:13px;color:var(--muted-fg)">
+          <a href="skills.html" style="color:var(--muted-fg)">Skip for now →</a>
+        </p>
+      </div>
+
+      <!-- STEP 3: Location -->
+      <div class="onboard-step" id="step3">
+        <h1 style="text-align:center;margin-bottom:8px">Where are you? 📍</h1>
+        <p class="subtitle" style="text-align:center;margin-bottom:24px">Help nearby users find you. You can leave this blank.</p>
+        <div class="form-group">
+          <div class="input-icon-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <input type="text" class="input" id="locationInput" placeholder="City, Country or Online">
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:24px">
+          <button class="btn btn-ghost btn-lg" id="step3Back">Back</button>
+          <button class="btn btn-primary w-full btn-lg" id="finishBtn">Finish Setup 🚀</button>
+        </div>
+        <p style="text-align:center;margin-top:12px;font-size:13px;color:var(--muted-fg)">
+          <a href="skills.html" style="color:var(--muted-fg)">Skip for now →</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Guard: must be logged in
+      if (!SwapifyAuth.isLoggedIn()) {
+        window.location.href = 'register.html';
+        return;
+      }
+
+      // State
+      var role = null;
+      var offeredSkills = [];
+      var wantedSkills  = [];
+      var currentStep   = 1;
+
+      // ── Step navigation ──────────────────────────────────────
+      function goTo(step) {
+        document.querySelectorAll('.onboard-step').forEach(function(el) { el.classList.remove('active'); });
+        document.getElementById('step' + step).classList.add('active');
+        document.querySelectorAll('.progress-dot').forEach(function(d, i) {
+          d.classList.toggle('active', i < step);
+        });
+        currentStep = step;
+      }
+
+      // ── Role selection ────────────────────────────────────────
+      document.querySelectorAll('.role-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+          document.querySelectorAll('.role-card').forEach(function(c) { c.classList.remove('selected'); });
+          card.classList.add('selected');
+          role = card.dataset.role;
+          // Show/hide sections based on role
+          var offSec = document.getElementById('offeredSection');
+          var wntSec = document.getElementById('wantedSection');
+          if (role === 'offer') { offSec.style.display = ''; wntSec.style.display = 'none'; }
+          else if (role === 'request') { offSec.style.display = 'none'; wntSec.style.display = ''; }
+          else { offSec.style.display = ''; wntSec.style.display = ''; }
+        });
+      });
+
+      document.getElementById('step1Next').addEventListener('click', function() { goTo(2); });
+      document.getElementById('step2Back').addEventListener('click', function() { goTo(1); });
+      document.getElementById('step2Next').addEventListener('click', function() { goTo(3); });
+      document.getElementById('step3Back').addEventListener('click', function() { goTo(2); });
+
+      // ── Chip helpers ─────────────────────────────────────────
+      function renderChips(arr, containerId) {
+        var row = document.getElementById(containerId);
+        row.innerHTML = '';
+        arr.forEach(function(skill, i) {
+          var chip = document.createElement('span');
+          chip.className = 'skill-chip';
+          chip.innerHTML = escapeHtml(skill) + '<button type="button" aria-label="Remove">&times;</button>';
+          chip.querySelector('button').addEventListener('click', function() {
+            arr.splice(i, 1);
+            renderChips(arr, containerId);
+          });
+          row.appendChild(chip);
+        });
+      }
+
+      function bindAddSkill(inputId, chipsId, arr) {
+        var inp = document.getElementById(inputId);
+        var btn = inp.parentElement.querySelector('button');
+        function addSkill() {
+          var val = inp.value.trim();
+          if (!val) return;
+          if (arr.indexOf(val) !== -1) { SwapifyUI.toast('Skill already added', 'warning'); return; }
+          arr.push(val);
+          renderChips(arr, chipsId);
+          inp.value = '';
+          inp.focus();
+        }
+        btn.addEventListener('click', addSkill);
+        inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); addSkill(); } });
+      }
+
+      bindAddSkill('offeredInput', 'offeredChips', offeredSkills);
+      bindAddSkill('wantedInput',  'wantedChips',  wantedSkills);
+
+      // ── Finish ────────────────────────────────────────────────
+      document.getElementById('finishBtn').addEventListener('click', function() {
+        var location = document.getElementById('locationInput').value.trim();
+        var me = SwapifyAuth.currentUser();
+
+        // Persist profile enrichment
+        SwapifyAuth.updateUser({
+          location:      location || me.location || '',
+          skillsOffered: offeredSkills,
+          skillsWanted:  wantedSkills,
+          role:          role || 'both',
+          onboardingDone: true
+        });
+
+        // Also create skill records in skills store so they appear in Explore
+        if (offeredSkills.length > 0 || wantedSkills.length > 0) {
+          var skills = SwapifyStore.get('skills') || [];
+          offeredSkills.forEach(function(s) {
+            skills.push({
+              id: 's' + Date.now() + Math.random().toString(36).slice(2),
+              userId: me.id,
+              offers: s,
+              requests: wantedSkills[0] || 'Open to anything',
+              level: 'Intermediate',
+              location: location || 'Online',
+              rating: 5.0,
+              status: 'active'
+            });
+          });
+          SwapifyStore.set('skills', skills);
+        }
+
+        SwapifyUI.toast('Profile set up! Let\'s explore 🚀', 'success');
+        setTimeout(function() { window.location.href = 'skills.html'; }, 900);
+      });
+
+      // ── Skip all ──────────────────────────────────────────────
+      document.getElementById('skipAll').addEventListener('click', function(e) {
+        e.preventDefault();
+        SwapifyAuth.updateUser({ onboardingDone: true });
+        window.location.href = 'skills.html';
+      });
+    });
+  </script>
+</body>
+</html>

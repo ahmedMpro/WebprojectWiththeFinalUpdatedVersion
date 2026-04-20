@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Users Management — Swapify Admin</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header"><div class="container header-inner">
+    <a href="index.html" class="logo"><div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div><span class="logo-text"><span>Swapify</span></span></a>
+    <nav class="nav"><a href="admin.html" class="nav-link">Dashboard</a><a href="admin-users.html" class="nav-link active">Users</a><a href="admin-skills.html" class="nav-link">Skills</a><a href="admin-swaps.html" class="nav-link">Swaps</a><a href="admin-reports.html" class="nav-link">Reports</a></nav>
+    <div class="header-actions"><span class="badge badge-primary" style="font-size:11px">ADMIN</span><button class="btn btn-ghost btn-sm rounded-full" id="themeToggle" onclick="toggleTheme()">🌙</button><button class="btn btn-ghost btn-sm" id="adminLogoutBtn" style="color:#ff6b6b;border:1px solid rgba(255,107,107,.3);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700" onclick="if(confirm('Sign out?'))SwapifyAuth.logout()">⏏ Logout</button><a href="profile.html" class="profile-ring"><img src="https://i.pravatar.cc/150?img=60" alt="Admin"></a></div>
+  </div></header>
+
+  <section class="section" style="padding-top:32px">
+    <div class="container">
+      <div class="flex justify-between items-center" style="margin-bottom:24px;flex-wrap:wrap;gap:12px">
+        <div><h1 style="font-size:28px;font-weight:700;margin-bottom:4px">Users Management</h1><p style="color:var(--muted-fg)" id="userCount"></p></div>
+        <input type="text" class="input" id="userSearch" placeholder="Search users..." style="max-width:260px">
+      </div>
+      <div class="card" style="overflow:hidden">
+        <table style="width:100%;border-collapse:collapse" id="usersTable">
+          <thead><tr style="border-bottom:2px solid var(--border);background:var(--muted)">
+            <th style="padding:14px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted-fg)">User</th>
+            <th style="padding:14px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted-fg)">Email</th>
+            <th style="padding:14px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted-fg)">Role</th>
+            <th style="padding:14px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted-fg)">Status</th>
+            <th style="padding:14px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted-fg)">Actions</th>
+          </tr></thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (!SwapifyAdmin.requireAdmin()) return;
+    var allUsers = SwapifyAdmin.getAllUsers();
+
+    function statusBadge(s) {
+      var map = { active:'var(--success)', banned:'#D97706', suspended:'var(--primary)' };
+      return '<span class="badge" style="color:' + (map[s]||'var(--fg)') + ';border-color:' + (map[s]||'var(--border)') + '">' + (s||'active') + '</span>';
+    }
+
+    function render(users) {
+      var tbody = document.getElementById('usersBody');
+      document.getElementById('userCount').textContent = users.length + ' user' + (users.length !== 1 ? 's' : '');
+      tbody.innerHTML = '';
+      if (!users.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--muted-fg)">No users found.</td></tr>';
+        return;
+      }
+      users.forEach(function(u) {
+        var tr = document.createElement('tr');
+        tr.style.cssText = 'border-bottom:1px solid var(--border);transition:background .2s';
+        tr.onmouseenter = function(){tr.style.background='var(--hover-surface)';};
+        tr.onmouseleave = function(){tr.style.background='';};
+        var isCurrentAdmin = u.role === 'admin';
+        tr.innerHTML =
+          '<td style="padding:14px 16px"><div style="display:flex;align-items:center;gap:12px"><img src="' + escapeHtml(u.avatar||'https://i.pravatar.cc/40') + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover"><div><div style="font-weight:600;font-size:14px">' + escapeHtml(u.name) + '</div><div style="font-size:12px;color:var(--muted-fg)">' + escapeHtml(u.location||'') + '</div></div></div></td>' +
+          '<td style="padding:14px 16px;font-size:14px;color:var(--muted-fg)">' + escapeHtml(u.email) + '</td>' +
+          '<td style="padding:14px 16px">' + (u.role==='admin' ? '<span class="badge badge-primary">admin</span>' : '<span class="badge badge-outline">user</span>') + '</td>' +
+          '<td style="padding:14px 16px">' + statusBadge(u.status) + '</td>' +
+          '<td style="padding:14px 16px">' + (isCurrentAdmin ? '<span style="color:var(--muted-fg);font-size:13px">Protected</span>' :
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+            (u.status !== 'active' ? '<button class="btn btn-ghost btn-sm" data-action="activate" data-uid="' + u.id + '">Activate</button>' : '') +
+            (u.status !== 'suspended' ? '<button class="btn btn-ghost btn-sm" data-action="suspend" data-uid="' + u.id + '">Suspend</button>' : '') +
+            (u.status !== 'banned' ? '<button class="btn btn-ghost btn-sm" data-action="ban" data-uid="' + u.id + '">Ban</button>' : '') +
+            '<button class="btn btn-ghost btn-sm" data-action="delete" data-uid="' + u.id + '" style="color:#D97706">Delete</button>' +
+            '</div>') +
+          '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    render(allUsers);
+
+    /* Event delegation for actions */
+    document.getElementById('usersBody').addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      var uid = btn.dataset.uid;
+      var action = btn.dataset.action;
+      if (action === 'ban') { SwapifyAdmin.banUser(uid); SwapifyUI.toast('User banned', 'success'); }
+      else if (action === 'suspend') { SwapifyAdmin.suspendUser(uid); SwapifyUI.toast('User suspended', 'info'); }
+      else if (action === 'activate') { SwapifyAdmin.activateUser(uid); SwapifyUI.toast('User activated', 'success'); }
+      else if (action === 'delete') {
+        if (!confirm('Delete this user permanently?')) return;
+        SwapifyAdmin.deleteUser(uid);
+        SwapifyUI.toast('User deleted', 'info');
+      }
+      render(SwapifyAdmin.getAllUsers());
+    });
+
+    /* Live search */
+    document.getElementById('userSearch').addEventListener('input', function() {
+      var q = this.value.toLowerCase();
+      var filtered = SwapifyAdmin.getAllUsers().filter(function(u) {
+        return u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || (u.location||'').toLowerCase().includes(q);
+      });
+      render(filtered);
+    });
+  });
+  </script>
+</body>
+</html>

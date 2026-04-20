@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Swap Monitoring — Swapify Admin</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header"><div class="container header-inner">
+    <a href="index.html" class="logo"><div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div><span class="logo-text"><span>Swapify</span></span></a>
+    <nav class="nav"><a href="admin.html" class="nav-link">Dashboard</a><a href="admin-users.html" class="nav-link">Users</a><a href="admin-skills.html" class="nav-link">Skills</a><a href="admin-swaps.html" class="nav-link active">Swaps</a><a href="admin-reports.html" class="nav-link">Reports</a></nav>
+    <div class="header-actions"><span class="badge badge-primary" style="font-size:11px">ADMIN</span><button class="btn btn-ghost btn-sm rounded-full" id="themeToggle" onclick="toggleTheme()">🌙</button><button class="btn btn-ghost btn-sm" id="adminLogoutBtn" style="color:#ff6b6b;border:1px solid rgba(255,107,107,.3);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700" onclick="if(confirm('Sign out?'))SwapifyAuth.logout()">⏏ Logout</button><a href="profile.html" class="profile-ring"><img src="https://i.pravatar.cc/150?img=60" alt="Admin"></a></div>
+  </div></header>
+
+  <section class="section" style="padding-top:32px">
+    <div class="container">
+      <div class="flex justify-between items-center" style="margin-bottom:24px;flex-wrap:wrap;gap:12px">
+        <div><h1 style="font-size:28px;font-weight:700;margin-bottom:4px">Swap Monitoring</h1><p style="color:var(--muted-fg)" id="swapCount"></p></div>
+        <select id="filterStatus" class="input" style="max-width:180px;appearance:none">
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="accepted">Accepted</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="card" style="overflow:hidden">
+        <table style="width:100%;border-collapse:collapse">
+          <thead><tr style="border-bottom:2px solid var(--border);background:var(--muted)">
+            <th style="padding:14px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted-fg)">ID</th>
+            <th style="padding:14px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted-fg)">From</th>
+            <th style="padding:14px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted-fg)">To</th>
+            <th style="padding:14px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted-fg)">Skill</th>
+            <th style="padding:14px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted-fg)">Status</th>
+            <th style="padding:14px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted-fg)">Actions</th>
+          </tr></thead>
+          <tbody id="swapsBody"></tbody>
+        </table>
+      </div>
+      <div id="swapsEmpty" style="display:none"><div class="empty-state"><div class="empty-state-icon">🔁</div><h3>No swaps found</h3></div></div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (!SwapifyAdmin.requireAdmin()) return;
+
+    function statusColor(s) { return {pending:'#D97706',accepted:'var(--success)',cancelled:'var(--muted-fg)'}[s]||'var(--fg)'; }
+
+    function render(swaps) {
+      var tbody = document.getElementById('swapsBody');
+      var empty = document.getElementById('swapsEmpty');
+      document.getElementById('swapCount').textContent = swaps.length + ' swap' + (swaps.length!==1?'s':'');
+      tbody.innerHTML = '';
+      empty.style.display = swaps.length ? 'none' : 'block';
+      swaps.forEach(function(sw) {
+        var ago = Math.round((Date.now()-sw.createdAt)/60000);
+        var t = ago<60?ago+'m ago':ago<1440?Math.round(ago/60)+'h ago':Math.round(ago/1440)+'d ago';
+        var sc = statusColor(sw.status);
+        var tr = document.createElement('tr');
+        tr.style.cssText = 'border-bottom:1px solid var(--border);transition:background .2s';
+        tr.onmouseenter=function(){tr.style.background='var(--hover-surface)';};
+        tr.onmouseleave=function(){tr.style.background='';};
+        tr.innerHTML =
+          '<td style="padding:14px 16px;font-size:12px;color:var(--muted-fg)">' + escapeHtml(sw.id) + '</td>' +
+          '<td style="padding:14px 16px;font-size:14px;font-weight:600">' + escapeHtml(sw.fromName) + '</td>' +
+          '<td style="padding:14px 16px;font-size:14px">' + escapeHtml(sw.toName) + '</td>' +
+          '<td style="padding:14px 16px;font-size:14px;color:var(--primary)">' + escapeHtml(sw.skillName) + '</td>' +
+          '<td style="padding:14px 16px"><div style="display:flex;align-items:center;gap:8px"><span class="badge" style="color:'+sc+';border-color:'+sc+'">' + sw.status + '</span>' + (sw.flagged?'<span title="Flagged">🚩</span>':'') + '<span style="font-size:11px;color:var(--muted-fg)">'+t+'</span></div></td>' +
+          '<td style="padding:14px 16px"><div style="display:flex;gap:8px;flex-wrap:wrap">' +
+            (sw.status!=='cancelled'?'<button class="btn btn-ghost btn-sm" data-action="cancel" data-sid="'+sw.id+'">Cancel</button>':'') +
+            (!sw.flagged?'<button class="btn btn-ghost btn-sm" data-action="flag" data-sid="'+sw.id+'" style="color:#D97706">Flag</button>':'<span style="font-size:12px;color:#D97706">Flagged</span>') +
+          '</div></td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    function getFiltered() {
+      var all = SwapifyAdmin.getAllSwaps();
+      var f = document.getElementById('filterStatus').value;
+      return f ? all.filter(function(sw){return sw.status===f;}) : all;
+    }
+
+    render(getFiltered());
+    document.getElementById('filterStatus').addEventListener('change', function(){render(getFiltered());});
+
+    document.getElementById('swapsBody').addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      var sid = btn.dataset.sid;
+      if (btn.dataset.action==='cancel') {
+        if (!confirm('Cancel this swap?')) return;
+        SwapifyAdmin.cancelSwap(sid);
+        SwapifyUI.toast('Swap cancelled', 'info');
+      } else if (btn.dataset.action==='flag') {
+        SwapifyAdmin.flagSwap(sid);
+        SwapifyUI.toast('Swap flagged 🚩', 'warning');
+      }
+      render(getFiltered());
+    });
+  });
+  </script>
+</body>
+</html>

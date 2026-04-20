@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Item — Swapify</title>
+  <meta name="description" content="List a new item, skill, or deal on Swapify.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header"><div class="container header-inner">
+    <a href="index.html" class="logo"><div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div><span class="logo-text"><span>Swapify</span></span></a>
+    <nav class="nav"><a href="index.html" class="nav-link">Home</a><a href="skills.html" class="nav-link">Swap Skills</a><a href="objects.html" class="nav-link">Swap Objects</a><a href="deals.html" class="nav-link">Half Price Deals</a></nav>
+    <div class="header-actions">
+      <div class="header-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" class="input" placeholder="Search..."></div>
+      <a href="messages.html" class="btn btn-icon btn-ghost" style="position:relative"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg><span class="notification-dot"></span></a>
+      <button class="btn btn-icon btn-ghost"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
+      <button class="btn btn-ghost btn-sm rounded-full" id="langToggle" onclick="toggleLang()">EN</button>
+      <button class="btn btn-ghost btn-sm rounded-full" id="themeToggle" onclick="toggleTheme()">🌙</button>
+      <a href="profile.html" class="profile-ring"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" alt="Profile"></a>
+      <button class="mobile-menu-btn btn btn-ghost btn-icon" onclick="toggleMobileMenu()"><svg id="menuIconOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg><svg id="menuIconClose" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    </div>
+  </div><div class="mobile-menu" id="mobileMenu"><a href="index.html">Home</a><a href="skills.html">Swap Skills</a><a href="objects.html">Swap Objects</a><a href="deals.html">Half Price Deals</a><a href="messages.html">Messages</a><a href="profile.html">Profile</a></div></header>
+
+  <!-- ADD ITEM FORM -->
+  <section class="section">
+    <div class="container" style="max-width:768px">
+      <div style="margin-bottom:32px">
+        <h1 style="font-size:32px;font-weight:800;margin-bottom:8px">Add New Listing</h1>
+        <p style="color:var(--muted-fg);font-size:16px">Choose your listing type, fill in the details, and share with the community.</p>
+      </div>
+
+      <form id="addItemForm">
+        <div class="form-card" style="margin-bottom:24px">
+          <div class="form-card-header">
+            <h2 style="font-size:18px;font-weight:700">What are you listing?</h2>
+          </div>
+          <div class="form-card-body">
+            <div class="type-selector">
+              <div class="type-option active" data-type="object">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                <span class="font-semibold">Object</span>
+                <span class="text-xs" style="color:var(--muted-fg)">Trade items</span>
+              </div>
+              <div class="type-option" data-type="skill">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                <span class="font-semibold">Skill</span>
+                <span class="text-xs" style="color:var(--muted-fg)">Share knowledge</span>
+              </div>
+              <div class="type-option" data-type="deal">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9.5 11.5 5-5"/><circle cx="11" cy="11" r="1"/><circle cx="14" cy="14" r="1"/></svg>
+                <span class="font-semibold">Deal</span>
+                <span class="text-xs" style="color:var(--muted-fg)">Sell at half price</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-card" style="margin-bottom:24px">
+          <div class="form-card-header">
+            <h2 style="font-size:18px;font-weight:700">Details</h2>
+          </div>
+          <div class="form-card-body">
+            <!-- Title -->
+            <div class="form-group">
+              <label for="itemTitle">Title</label>
+              <input type="text" class="input" id="itemTitle" placeholder="What are you offering?">
+              <span class="form-error" id="titleError"></span>
+            </div>
+            <!-- Description -->
+            <div class="form-group">
+              <label for="itemDesc">Description</label>
+              <textarea class="textarea" id="itemDesc" placeholder="Describe your item, skill, or deal in detail. Include condition, what you're looking for, and any relevant info."></textarea>
+              <span class="form-error" id="descError"></span>
+            </div>
+            <!-- Condition (show for object/deal) -->
+            <div class="form-group" id="conditionField">
+              <label for="itemCondition">Condition</label>
+              <div class="select-wrap">
+                <select id="itemCondition" class="input">
+                  <option value="">Select condition</option>
+                  <option value="new">New</option>
+                  <option value="likeNew">Like New</option>
+                  <option value="good">Good</option>
+                  <option value="fair">Fair</option>
+                  <option value="used">Used</option>
+                </select>
+              </div>
+            </div>
+            <!-- Price (show only for deal) -->
+            <div class="form-group" id="priceFields" style="display:none;flex-direction:row;gap:16px">
+              <div class="form-group" style="flex:1">
+                <label for="originalPrice">Original Price ($)</label>
+                <input type="number" class="input" id="originalPrice" placeholder="0.00">
+              </div>
+              <div class="form-group" style="flex:1">
+                <label for="sellingPrice">Selling Price ($)</label>
+                <input type="number" class="input" id="sellingPrice" placeholder="0.00">
+              </div>
+            </div>
+            <!-- Location -->
+            <div class="form-group">
+              <label for="itemLocation">Location</label>
+              <input type="text" class="input" id="itemLocation" placeholder="City, area, or 'Online'">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-card" style="margin-bottom:24px">
+          <div class="form-card-header">
+            <h2 style="font-size:18px;font-weight:700">Photos</h2>
+            <p class="text-sm" style="color:var(--muted-fg);margin-top:4px">Upload up to 5 photos (<span id="photoCount">0</span>/5)</p>
+          </div>
+          <div class="form-card-body">
+            <div class="photo-grid" id="photoGrid">
+              <label class="photo-add" for="photoInput">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                Add Photo
+              </label>
+              <input type="file" id="photoInput" accept="image/jpeg, image/png, image/webp" style="display:none">
+            </div>
+            <span class="form-error" id="photoError"></span>
+          </div>
+        </div>
+
+        <div class="flex justify-between gap-4" style="flex-wrap:wrap">
+          <a href="index.html" class="btn btn-outline btn-lg" style="flex:1;min-width:140px;text-align:center">Cancel</a>
+          <button type="submit" class="btn btn-primary btn-lg" style="flex:2;min-width:200px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Publish Listing
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo" style="margin-bottom:8px" aria-label="Swapify Home">
+            <div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div>
+            <span class="logo-text"><span>Swapify</span></span>
+          </a>
+          <p>The cozy community marketplace where you can swap skills, trade items, and grab amazing half-price deals.</p>
+          <div class="footer-social">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on Facebook" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on X" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18"/><path d="M6 6L18 18"/></svg>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on Instagram" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on LinkedIn" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>About Swapify</h4>
+          <ul>
+            <li><a href="about.html">About Swapify</a></li>
+            <li><a href="our-story.html">Our Story</a></li>
+            <li><a href="how-it-works.html">How it Works</a></li>
+            <li><a href="sustainability.html">Sustainability</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Community</h4>
+          <ul>
+            <li><a href="guidelines.html">Guidelines</a></li>
+            <li><a href="success-stories.html">Success Stories</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Help Center</h4>
+          <ul>
+            <li><a href="help-center.html">Help Center</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="contact.html">Contact Support</a></li>
+            <li><a href="trust-safety.html">Trust &amp; Safety</a></li>
+            <li><a href="terms.html">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Swapify. All rights reserved.</p>
+        <div class="footer-tagline">
+          <span>Less waste. More sharing.</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--primary)" stroke="var(--primary)" stroke-width="2" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="bottom-nav"><a href="index.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a><a href="skills.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg><span>Skills</span></a><a href="add.html" class="add-btn active"><div class="add-btn-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div></a><a href="messages.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg><span>Messages</span></a><a href="profile.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg><span>Profile</span></a></nav>
+
+  <script src="app.js"></script>
+</body>
+</html>

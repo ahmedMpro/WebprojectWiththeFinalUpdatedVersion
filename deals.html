@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Half Price Deals — Swapify</title>
+  <meta name="description" content="Amazing items at 50% off or more. Save money and reduce waste.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header"><div class="container header-inner">
+    <a href="index.html" class="logo"><div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div><span class="logo-text"><span>Swapify</span></span></a>
+    <nav class="nav"><a href="index.html" class="nav-link">Home</a><a href="skills.html" class="nav-link">Swap Skills</a><a href="objects.html" class="nav-link">Swap Objects</a><a href="deals.html" class="nav-link active">Half Price Deals</a></nav>
+    <div class="header-actions">
+      <div class="header-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" class="input" placeholder="Search..."></div>
+      <a href="messages.html" class="btn btn-icon btn-ghost" style="position:relative"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg><span class="notification-dot"></span></a>
+      <button class="btn btn-icon btn-ghost"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
+      <button class="btn btn-ghost btn-sm rounded-full" id="themeToggle" onclick="toggleTheme()">🌙</button>
+      <a href="profile.html" class="profile-ring"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" alt="Profile"></a>
+      <button class="mobile-menu-btn btn btn-ghost btn-icon" onclick="toggleMobileMenu()"><svg id="menuIconOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg><svg id="menuIconClose" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    </div>
+  </div><div class="mobile-menu" id="mobileMenu"><a href="index.html">Home</a><a href="skills.html">Swap Skills</a><a href="objects.html">Swap Objects</a><a href="deals.html">Half Price Deals</a><a href="messages.html">Messages</a><a href="profile.html">Profile</a></div></header>
+
+  <!-- DEALS BANNER -->
+  <section class="deals-banner">
+    <div class="stripe-pattern"><svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="stripes" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="20" height="40" fill="currentColor"/></pattern></defs><rect width="100%" height="100%" fill="url(#stripes)"/></svg></div>
+    <div class="container" style="position:relative;z-index:1">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2" style="margin:0 auto 24px;display:block"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9.5 11.5 5-5"/><circle cx="11" cy="11" r="1"/><circle cx="14" cy="14" r="1"/></svg>
+      <h1 style="font-size:clamp(32px,5vw,56px);font-weight:700;margin-bottom:16px">Half Price Deals</h1>
+      <p style="font-size:clamp(16px,2.5vw,22px);opacity:.9;max-width:640px;margin:0 auto 40px;font-weight:500">Amazing items at 50% off or more. Save money and reduce waste.</p>
+    </div>
+  </section>
+
+  <!-- DEALS GRID -->
+  <section class="section"><div class="container">
+    <div class="flex items-center justify-between" style="margin-bottom:32px;flex-wrap:wrap;gap:12px">
+      <h2 style="font-size:24px;font-weight:700;display:flex;align-items:center;gap:8px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9.5 11.5 5-5"/><circle cx="11" cy="11" r="1"/><circle cx="14" cy="14" r="1"/></svg> Trending Deals</h2>
+    </div>
+
+    <div class="grid grid-4 gap-6">
+      <!-- Deal 1 -->
+      <div class="item-card deal-card fade-in">
+        <div class="item-card-img"><img class="card-img" src="https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?auto=format&fit=crop&q=80&w=400&h=300" alt="Apple AirPods Pro"><div class="item-card-badges"><span class="badge badge-discount">-52%</span></div><button class="item-card-fav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button></div>
+        <div class="item-card-body"><h3 class="item-card-title">Apple AirPods Pro</h3><div class="deal-price"><span class="current">$120</span><span class="original">$249</span></div><div class="deal-details"><span>Condition: <strong>Like New</strong></span><span>Seller: <strong>Alex M.</strong></span></div><button class="btn btn-secondary w-full" onclick="window.location='payment.html?id=1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg> Buy Now</button></div>
+      </div>
+      <!-- Deal 2 -->
+      <div class="item-card deal-card fade-in fade-in-delay-1">
+        <div class="item-card-img"><img class="card-img" src="https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?auto=format&fit=crop&q=80&w=400&h=300" alt="IKEA Office Chair"><div class="item-card-badges"><span class="badge badge-discount">-58%</span></div><button class="item-card-fav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button></div>
+        <div class="item-card-body"><h3 class="item-card-title">IKEA Office Chair</h3><div class="deal-price"><span class="current">$50</span><span class="original">$120</span></div><div class="deal-details"><span>Condition: <strong>Good</strong></span><span>Seller: <strong>Sarah J.</strong></span></div><button class="btn btn-secondary w-full" onclick="window.location='payment.html?id=2'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg> Buy Now</button></div>
+      </div>
+      <!-- Deal 3 -->
+      <div class="item-card deal-card fade-in fade-in-delay-2">
+        <div class="item-card-img"><img class="card-img" src="https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?auto=format&fit=crop&q=80&w=400&h=300" alt="Nintendo Switch"><div class="item-card-badges"><span class="badge badge-discount">-51%</span></div><button class="item-card-fav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button></div>
+        <div class="item-card-body"><h3 class="item-card-title">Nintendo Switch</h3><div class="deal-price"><span class="current">$145</span><span class="original">$299</span></div><div class="deal-details"><span>Condition: <strong>Used</strong></span><span>Seller: <strong>Mike T.</strong></span></div><button class="btn btn-secondary w-full" onclick="window.location='payment.html?id=3'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg> Buy Now</button></div>
+      </div>
+      <!-- Deal 4 -->
+      <div class="item-card deal-card fade-in fade-in-delay-3">
+        <div class="item-card-img"><img class="card-img" src="https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?auto=format&fit=crop&q=80&w=400&h=300" alt="Winter Coat"><div class="item-card-badges"><span class="badge badge-discount">-55%</span></div><button class="item-card-fav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button></div>
+        <div class="item-card-body"><h3 class="item-card-title">Winter Coat</h3><div class="deal-price"><span class="current">$80</span><span class="original">$180</span></div><div class="deal-details"><span>Condition: <strong>New w/o tags</strong></span><span>Seller: <strong>Elena R.</strong></span></div><button class="btn btn-secondary w-full" onclick="window.location='payment.html?id=4'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg> Buy Now</button></div>
+      </div>
+      <!-- Deal 5 -->
+      <div class="item-card deal-card fade-in">
+        <div class="item-card-img"><img class="card-img" src="https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?auto=format&fit=crop&q=80&w=400&h=300" alt="Coffee Maker"><div class="item-card-badges"><span class="badge badge-discount">-55%</span></div><button class="item-card-fav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button></div>
+        <div class="item-card-body"><h3 class="item-card-title">Coffee Maker</h3><div class="deal-price"><span class="current">$40</span><span class="original">$90</span></div><div class="deal-details"><span>Condition: <strong>Good</strong></span><span>Seller: <strong>David C.</strong></span></div><button class="btn btn-secondary w-full" onclick="window.location='payment.html?id=5'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg> Buy Now</button></div>
+      </div>
+      <!-- Deal 6 -->
+      <div class="item-card deal-card fade-in fade-in-delay-1">
+        <div class="item-card-img"><img class="card-img" src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=400&h=300" alt="Acoustic Panels"><div class="item-card-badges"><span class="badge badge-discount">-58%</span></div><button class="item-card-fav"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button></div>
+        <div class="item-card-body"><h3 class="item-card-title">Acoustic Panels (6pk)</h3><div class="deal-price"><span class="current">$25</span><span class="original">$60</span></div><div class="deal-details"><span>Condition: <strong>New</strong></span><span>Seller: <strong>James W.</strong></span></div><button class="btn btn-secondary w-full" onclick="window.location='payment.html?id=6'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg> Buy Now</button></div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- FOOTER -->
+  <footer class="footer"><div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><a href="index.html" class="logo" style="margin-bottom:8px"><div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div><span class="logo-text"><span>Swapify</span></span></a><p>The cozy community marketplace where you can swap skills, trade items, and grab amazing half-price deals.</p><div class="footer-social"><a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a><a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18"/><path d="M6 6L18 18"/></svg></a><a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></a><a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg></a></div></div>
+      <div class="footer-col"><h4>About Swapify</h4><ul><li><a href="our-story.html">Our Story</a></li><li><a href="how-it-works.html">How it Works</a></li><li><a href="sustainability.html">Sustainability</a></li></ul></div>
+      <div class="footer-col"><h4>Community</h4><ul><li><a href="guidelines.html">Guidelines</a></li><li><a href="success-stories.html">Success Stories</a></li></ul></div>
+      <div class="footer-col"><h4>Help Center</h4><ul><li><a href="faq.html">FAQ</a></li><li><a href="contact.html">Contact Support</a></li><li><a href="trust-safety.html">Trust &amp; Safety</a></li><li><a href="terms.html">Terms of Service</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2026 Swapify. All rights reserved.</p><div class="footer-tagline"><span>Less waste. More sharing.</span><svg width="16" height="16" viewBox="0 0 24 24" fill="var(--primary)" stroke="var(--primary)" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div></div>
+  </div></footer>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="bottom-nav"><a href="index.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a><a href="skills.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg><span>Skills</span></a><a href="add.html" class="add-btn"><div class="add-btn-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div></a><a href="messages.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg><span>Messages</span></a><a href="profile.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg><span>Profile</span></a></nav>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+      const purchasedNames = history.map(order => order.itemName.toLowerCase().trim());
+      
+      const cards = document.querySelectorAll('.deal-card');
+      cards.forEach(card => {
+        const titleEl = card.querySelector('.item-card-title');
+        if (titleEl) {
+          const title = titleEl.textContent.toLowerCase().trim();
+          if (purchasedNames.includes(title)) {
+            const btn = card.querySelector('button.btn-secondary');
+            if (btn) {
+              btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> Sold Out';
+              btn.className = 'btn btn-outline w-full';
+              btn.style.pointerEvents = 'none';
+              btn.style.opacity = '0.6';
+              btn.removeAttribute('onclick');
+            }
+            const badgesDiv = card.querySelector('.item-card-badges');
+            if (badgesDiv) {
+              badgesDiv.innerHTML += '<span class="badge" style="background:var(--error); color:white; border-color:var(--error); margin-left:4px;">Sold Out</span>';
+            }
+          }
+        }
+      });
+    });
+
+    window.setDealSearchQuery = function(q) {
+      const cards = document.querySelectorAll('.deal-card');
+      const query = q.toLowerCase().trim();
+      cards.forEach(card => {
+        const title = card.querySelector('.item-card-title').textContent.toLowerCase();
+        if (title.includes(query)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    };
+  </script>
+</body>
+</html>

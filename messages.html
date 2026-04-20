@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages — Swapify</title>
+  <meta name="description" content="Chat with other swappers and arrange your swaps.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body style="overflow:hidden">
+
+  <!-- HEADER -->
+  <header class="header"><div class="container header-inner">
+    <a href="index.html" class="logo"><div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div><span class="logo-text"><span>Swapify</span></span></a>
+    <nav class="nav"><a href="index.html" class="nav-link">Home</a><a href="skills.html" class="nav-link">Swap Skills</a><a href="objects.html" class="nav-link">Swap Objects</a><a href="deals.html" class="nav-link">Half Price Deals</a></nav>
+    <div class="header-actions">
+      <div class="header-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" class="input" placeholder="Search..."></div>
+      <button class="btn btn-icon btn-ghost"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
+      <button class="btn btn-ghost btn-sm rounded-full" id="themeToggle" onclick="toggleTheme()">🌙</button>
+      <a href="profile.html" class="profile-ring"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" alt="Profile"></a>
+      <button class="mobile-menu-btn btn btn-ghost btn-icon" onclick="toggleMobileMenu()"><svg id="menuIconOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg><svg id="menuIconClose" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    </div>
+  </div><div class="mobile-menu" id="mobileMenu"><a href="index.html">Home</a><a href="skills.html">Swap Skills</a><a href="objects.html">Swap Objects</a><a href="deals.html">Half Price Deals</a><a href="messages.html">Messages</a><a href="profile.html">Profile</a></div></header>
+
+  <!-- MESSAGES LAYOUT -->
+  <div class="messages-layout">
+    <!-- SIDEBAR -->
+    <div class="messages-sidebar">
+      <div class="messages-sidebar-header">
+        <h2>Messages</h2>
+        <div style="position:relative"><svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted-fg)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" class="input" style="padding-left:36px;background:var(--muted);border-color:transparent" placeholder="Search messages..."></div>
+      </div>
+      <div class="chat-list" id="chatListContainer">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+
+    <!-- CHAT AREA -->
+    <div class="messages-chat" id="chatArea" style="display:none;flex-direction:column">
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <div class="flex items-center gap-3">
+          <button class="btn btn-ghost btn-icon" id="chatBackBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button>
+          <img src="" alt="User" class="avatar avatar-md" id="chatHeaderAvatar" style="border:1px solid var(--border)">
+          <div><h3 class="font-semibold text-sm" id="chatHeaderName">User</h3><p class="text-xs" style="color:var(--success);font-weight:500">Online</p></div>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="chat-messages" id="chatMessages">
+        <!-- Dynamically populated -->
+      </div>
+
+      <!-- Input -->
+      <div class="chat-input">
+        <form class="chat-input-form" id="chatForm">
+          <input type="text" class="input" id="chatInput" placeholder="Type your message..." style="border-radius:var(--radius-full);height:48px">
+          <button type="submit" class="btn btn-primary btn-icon" style="width:48px;height:48px;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
+        </form>
+      </div>
+    </div>
+    
+    <div class="messages-chat empty-chat" id="emptyChat" style="display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--muted-fg)">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom:16px;opacity:0.5"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg>
+      <h3>Select a conversation</h3>
+      <p>Choose a message on the left to start chatting.</p>
+    </div>
+  </div>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="bottom-nav"><a href="index.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a><a href="skills.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg><span>Skills</span></a><a href="add.html" class="add-btn"><div class="add-btn-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div></a><a href="messages.html" class="active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg><span>Messages</span></a><a href="profile.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg><span>Profile</span></a></nav>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!SwapifyAuth.isLoggedIn()) { window.location.href = 'index.html'; return; }
+
+      var me          = SwapifyAuth.currentUser();
+      var listEl      = document.getElementById('chatListContainer');
+      var areaEl      = document.getElementById('chatArea');
+      var emptyEl     = document.getElementById('emptyChat');
+      var messagesEl  = document.getElementById('chatMessages');
+      var chatForm    = document.getElementById('chatForm');
+      var chatInput   = document.getElementById('chatInput');
+      var submitBtn   = chatForm ? chatForm.querySelector('button[type="submit"]') : null;
+      var headerName  = document.getElementById('chatHeaderName');
+      var headerAvg   = document.getElementById('chatHeaderAvatar');
+      var currentPartnerId = null;
+      var typingTimer  = null;
+
+      // Typing indicator element (injected under chat header)
+      var typingEl = document.createElement('p');
+      typingEl.id  = 'typingIndicator';
+      typingEl.style.cssText = 'font-size:12px;color:var(--muted-fg);padding:0 20px 4px;display:none;font-style:italic';
+      typingEl.textContent   = 'typing...';
+      var chatHeader = document.querySelector('.chat-header');
+      if (chatHeader) chatHeader.appendChild(typingEl);
+
+      /* ── HELPERS ──────────────────────────────────────────── */
+      function escH(str) { var d = document.createElement('div'); d.textContent = String(str||''); return d.innerHTML; }
+
+      function timeStr(ts) { return new Date(ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
+
+      /* ── RENDER CHAT LIST ─────────────────────────────────── */
+      function renderList() {
+        var threads = SwapifyChat.getThreads(me.id);
+        listEl.innerHTML = '';
+        if (threads.length === 0) {
+          listEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted-fg)">No messages yet. Start a swap!</div>';
+          return;
+        }
+        threads.forEach(function(t) {
+          var div = document.createElement('div');
+          div.className = 'chat-item' + (currentPartnerId === t.partnerId ? ' active' : '');
+          div.dataset.partnerId = t.partnerId;
+          var lastText = t.lastMessage ? escH(t.lastMessage.text) : '';
+          var lastTime = t.lastMessage ? timeStr(t.lastMessage.timestamp) : '';
+          var onlineDot = t.partner.online ? '<span class="online-dot"></span>' : '';
+          div.innerHTML =
+            '<div class="chat-item-avatar" style="position:relative"><img src="' + escH(t.partner.avatar || 'https://i.pravatar.cc/150?u='+t.partnerId) + '" class="avatar avatar-md">' + onlineDot + '</div>' +
+            '<div class="chat-item-content"><div class="chat-item-top"><span class="chat-item-name">' + escH(t.partner.name) + '</span><span class="chat-item-time">' + lastTime + '</span></div>' +
+            '<div class="chat-item-bottom"><span class="chat-item-msg" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + lastText + '</span></div></div>';
+          div.addEventListener('click', function() { openChat(t.partnerId); });
+          listEl.appendChild(div);
+        });
+      }
+
+      /* ── OPEN CHAT ────────────────────────────────────────── */
+      function openChat(partnerId) {
+        var users   = SwapifyStore.get('users') || [];
+        var partner = users.find(function(u) { return u.id === partnerId; });
+        if (!partner) { SwapifyUI.toast('User not found', 'error'); return; }
+
+        currentPartnerId = partnerId;
+        renderList(); // re-render to highlight active
+
+        // Show chat area
+        emptyEl.style.display = 'none';
+        areaEl.style.display  = 'flex';
+
+        // Header
+        headerName.textContent = partner.name;
+        headerAvg.src  = partner.avatar || 'https://i.pravatar.cc/150?u=' + partnerId;
+        headerAvg.alt  = partner.name;
+
+        renderMessages();
+
+        // Mobile: hide sidebar
+        if (window.innerWidth <= 768) {
+          document.querySelector('.messages-sidebar').style.display = 'none';
+        }
+      }
+
+      /* ── RENDER MESSAGES ──────────────────────────────────── */
+      function renderMessages() {
+        if (!currentPartnerId) return;
+        var msgs = SwapifyChat.getMessages(me.id, currentPartnerId);
+        messagesEl.innerHTML = '';
+
+        if (msgs.length === 0) {
+          messagesEl.innerHTML = '<div style="text-align:center;color:var(--muted-fg);padding:32px 16px;font-size:14px">No messages yet. Say hi! 👋</div>';
+        } else {
+          msgs.forEach(function(m) {
+            appendMessageEl(m, false);
+          });
+        }
+        scrollBottom();
+      }
+
+      /* ── APPEND ONE MESSAGE ───────────────────────────────── */
+      function appendMessageEl(m, animate) {
+        var isSent = m.sender === me.id;
+        var div = document.createElement('div');
+        div.className = 'message ' + (isSent ? 'sent' : 'received');
+        if (animate) div.style.animation = 'fadeInUp .2s ease';
+        var statusHtml = '';
+        if (isSent) {
+          var statusClass = m.status === 'seen' ? 'seen' : m.status === 'delivered' ? 'delivered' : 'sent-tick';
+          statusHtml = '<span class="msg-status ' + statusClass + '" data-msg-id="' + escH(m.id) + '">' +
+            (m.status === 'sent' ? '✓' : '✓✓') + '</span>';
+        }
+        div.innerHTML = '<div><div class="message-bubble">' + escH(m.text) + '</div>' +
+          '<div class="message-time">' + timeStr(m.timestamp) + ' ' + statusHtml + '</div></div>';
+        messagesEl.appendChild(div);
+      }
+
+      /* ── SCROLL BOTTOM ────────────────────────────────────── */
+      function scrollBottom() {
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
+      /* ── SEND MESSAGE ─────────────────────────────────────── */
+      if (chatForm) {
+        chatForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var txt = chatInput.value.trim();
+          if (!txt || !currentPartnerId) return;
+          if (submitBtn) submitBtn.disabled = true;
+
+          // Clear typing indicator
+          typingEl.style.display = 'none';
+          clearTimeout(typingTimer);
+
+          var msg = SwapifyChat.send(me.id, currentPartnerId, txt);
+          chatInput.value = '';
+
+          if (msg) {
+            appendMessageEl(msg, true);
+            scrollBottom();
+            renderList();
+
+            // Simulate delivered after 1.2s
+            setTimeout(function() {
+              var msgs2 = SwapifyStore.get('messages') || [];
+              var idx = msgs2.findIndex(function(m) { return m.id === msg.id; });
+              if (idx > -1) { msgs2[idx].status = 'delivered'; SwapifyStore.set('messages', msgs2); }
+              var tick = messagesEl.querySelector('[data-msg-id="' + msg.id + '"]');
+              if (tick) { tick.textContent = '✓✓'; tick.className = 'msg-status delivered'; }
+            }, 1200);
+          }
+
+          if (submitBtn) submitBtn.disabled = false;
+          chatInput.focus();
+        });
+      }
+
+      /* ── TYPING INDICATOR ─────────────────────────────────── */
+      if (chatInput) {
+        chatInput.addEventListener('input', function() {
+          if (!currentPartnerId) return;
+          typingEl.style.display = 'block';
+          clearTimeout(typingTimer);
+          typingTimer = setTimeout(function() { typingEl.style.display = 'none'; }, 2000);
+        });
+      }
+
+      /* ── BACK BUTTON ──────────────────────────────────────── */
+      var backBtn = document.getElementById('chatBackBtn');
+      if (backBtn) {
+        backBtn.addEventListener('click', function() {
+          document.querySelector('.messages-sidebar').style.display = 'flex';
+          areaEl.style.display  = 'none';
+          emptyEl.style.display = 'flex';
+          currentPartnerId = null;
+          renderList();
+        });
+      }
+
+      /* ── INIT ─────────────────────────────────────────────── */
+      renderList();
+
+      // Auto-open chat if ?partner= is in URL
+      var urlParams   = new URLSearchParams(window.location.search);
+      var partnerParam = urlParams.get('partner');
+      if (partnerParam) {
+        openChat(partnerParam);
+      }
+    });
+  </script>
+</body>
+</html>

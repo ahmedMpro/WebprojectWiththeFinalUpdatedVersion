@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile — Swapify</title>
+  <meta name="description" content="Your Swapify profile. Manage your skills, items, deals, and swap requests.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header"><div class="container header-inner">
+    <a href="index.html" class="logo"><div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div><span class="logo-text"><span>Swapify</span></span></a>
+    <nav class="nav"><a href="index.html" class="nav-link">Home</a><a href="skills.html" class="nav-link">Swap Skills</a><a href="objects.html" class="nav-link">Swap Objects</a><a href="deals.html" class="nav-link">Half Price Deals</a></nav>
+    <div class="header-actions">
+      <div class="header-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" class="input" placeholder="Search..."></div>
+      <a href="messages.html" class="btn btn-icon btn-ghost" style="position:relative"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg><span class="notification-dot"></span></a>
+      <button class="btn btn-icon btn-ghost"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
+      <button class="btn btn-ghost btn-sm rounded-full" id="langToggle" onclick="toggleLang()">EN</button>
+      <button class="btn btn-ghost btn-sm rounded-full" id="themeToggle" onclick="toggleTheme()">🌙</button>
+      <a href="profile.html" class="profile-ring"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" alt="Profile"></a>
+      <button class="mobile-menu-btn btn btn-ghost btn-icon" onclick="toggleMobileMenu()"><svg id="menuIconOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg><svg id="menuIconClose" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    </div>
+  </div><div class="mobile-menu" id="mobileMenu"><a href="index.html">Home</a><a href="skills.html">Swap Skills</a><a href="objects.html">Swap Objects</a><a href="deals.html">Half Price Deals</a><a href="messages.html">Messages</a><a href="profile.html">Profile</a></div></header>
+
+  <!-- COVER PHOTO -->
+  <div class="profile-cover"></div>
+
+  <!-- PROFILE CONTENT -->
+  <div class="container" style="padding-bottom:80px">
+    <!-- Profile Card -->
+    <div class="profile-card fade-in" style="margin-bottom:48px">
+      <div class="profile-avatar">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200&h=200" alt="Sarah Jenkins" class="avatar-xl" style="width:160px;height:160px;border-radius:50%;border:4px solid var(--bg);object-fit:cover;box-shadow:var(--shadow-lg)">
+        <div class="profile-verified"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+      </div>
+      <div class="profile-info">
+        <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:16px">
+          <div>
+            <h1 class="profile-name">Sarah Jenkins</h1>
+            <p class="profile-handle">@sarahj <span style="width:4px;height:4px;border-radius:50%;background:var(--muted-fg);display:inline-block"></span> <span class="item-card-rating" style="font-size:14px"><svg viewBox="0 0 24 24" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> 4.9 (124 swaps)</span></p>
+          </div>
+          <div class="flex gap-3">
+            <a href="settings.html" class="btn btn-outline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg> Edit Profile</a>
+            <a href="favorites.html" class="btn btn-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> My Favorites</a>
+          </div>
+        </div>
+        <p class="profile-bio">Sustainability enthusiast, amateur photographer, and language learner. Always looking to swap knowledge and cool vintage finds! 🌿📸</p>
+        <div class="profile-details">
+          <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Brooklyn, NY</span>
+          <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg> Joined Mar 2023</span>
+          <span style="color:var(--success);font-weight:500"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg> Trusted Swapper</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs hide-scrollbar">
+      <button class="tab active" data-tab="skills">My Skills</button>
+      <button class="tab" data-tab="items">My Items</button>
+      <button class="tab" data-tab="deals">My Deals</button>
+      <button class="tab" data-tab="requests">Swap Requests</button>
+      <button class="tab" data-tab="history">Purchase History</button>
+      <button class="tab" data-tab="wallet">Wallet</button>
+    </div>
+
+    <!-- TAB CONTENT: Skills -->
+    <div class="tab-content active" id="tab-skills">
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:24px">My Skills</h2>
+      <div class="grid grid-3 gap-6">
+        <div class="card" style="padding:24px;border:2px dashed var(--border)">
+          <div class="flex justify-between items-center" style="margin-bottom:16px"><div style="width:48px;height:48px;background:rgba(76,175,122,.1);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--success)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><span class="badge badge-outline">Active</span></div>
+          <h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Photography Basics</h3>
+          <p class="text-sm" style="color:var(--muted-fg);margin-bottom:16px">Offering 1-on-1 sessions on DSLR basics and composition.</p>
+          <button class="btn btn-outline btn-sm w-full">Edit</button>
+        </div>
+        <div class="card" style="padding:24px;border:2px dashed var(--border)">
+          <div class="flex justify-between items-center" style="margin-bottom:16px"><div style="width:48px;height:48px;background:rgba(76,175,122,.1);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--success)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><span class="badge badge-outline">Active</span></div>
+          <h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Conversational Spanish</h3>
+          <p class="text-sm" style="color:var(--muted-fg);margin-bottom:16px">Practice sessions for intermediate-level learners.</p>
+          <button class="btn btn-outline btn-sm w-full">Edit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB CONTENT: Items -->
+    <div class="tab-content" id="tab-items">
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:24px">My Items</h2>
+      <div class="grid grid-3 gap-6">
+        <div class="card"><div style="height:160px;overflow:hidden"><img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=400&h=300" alt="Vintage Camera" style="width:100%;height:100%;object-fit:cover"></div><div class="card-body"><h3 style="font-weight:700;margin-bottom:4px">Vintage Camera</h3><p class="text-xs" style="color:var(--muted-fg);margin-bottom:16px">Listed 2 days ago</p><button class="btn btn-outline btn-sm w-full">Manage Listing</button></div></div>
+        <div class="card"><div style="height:160px;overflow:hidden"><img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&q=80&w=400&h=300" alt="Nike Air Max" style="width:100%;height:100%;object-fit:cover"></div><div class="card-body"><h3 style="font-weight:700;margin-bottom:4px">Nike Air Max</h3><p class="text-xs" style="color:var(--muted-fg);margin-bottom:16px">Listed 5 days ago</p><button class="btn btn-outline btn-sm w-full">Manage Listing</button></div></div>
+        <div class="card"><div style="height:160px;overflow:hidden"><img src="https://images.unsplash.com/photo-1588690155458-7c85848bb2ce?auto=format&fit=crop&q=80&w=400&h=300" alt="Wooden Desk" style="width:100%;height:100%;object-fit:cover"></div><div class="card-body"><h3 style="font-weight:700;margin-bottom:4px">Wooden Desk</h3><p class="text-xs" style="color:var(--muted-fg);margin-bottom:16px">Listed 1 week ago</p><button class="btn btn-outline btn-sm w-full">Manage Listing</button></div></div>
+      </div>
+    </div>
+
+    <!-- Empty Tabs -->
+    <div class="tab-content" id="tab-deals"><div class="empty-state"><div class="empty-state-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted-fg)" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div><h3>No deals yet</h3><p>When you have activity here, it will show up. Start exploring the community to find your next great swap!</p><a href="deals.html" class="btn btn-primary">Explore Community</a></div></div>
+    <div class="tab-content" id="tab-requests"><div class="empty-state"><div class="empty-state-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted-fg)" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div><h3>No swap requests yet</h3><p>When you have activity here, it will show up. Start exploring the community to find your next great swap!</p><a href="skills.html" class="btn btn-primary">Explore Community</a></div></div>
+    <div class="tab-content" id="tab-history"><div class="empty-state"><div class="empty-state-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted-fg)" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div><h3>No history yet</h3><p>When you have activity here, it will show up. Start exploring the community to find your next great swap!</p><a href="index.html" class="btn btn-primary">Explore Community</a></div></div>
+    
+    <div class="tab-content" id="tab-wallet">
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:24px; font-family: var(--font-heading);">My Wallet</h2>
+      <div class="grid grid-2 gap-6" style="margin-bottom:32px;">
+        <div class="card" style="padding:24px; background: linear-gradient(135deg, rgba(124,58,237,.05), rgba(37,99,235,.05)); border: 1px solid rgba(124,58,237,.2); position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-20px; right:-20px; width:120px; height:120px; background:radial-gradient(circle, rgba(124,58,237,.1) 0%, transparent 70%); border-radius:50%;"></div>
+          <div class="font-bold text-muted-fg mb-2" style="position:relative; z-index:1;">Available Points</div>
+          <div class="flex items-center gap-2" style="font-size:36px; font-weight:800; color:var(--primary); position:relative; z-index:1; font-family:var(--font-heading);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span id="walletPointsVal">0</span>
+          </div>
+          <p class="text-sm mt-2 text-muted-fg" style="position:relative; z-index:1; font-weight:500;">Equivalent to $<span id="walletPointsCash">0.00</span> in store credit</p>
+          <div style="margin-top:20px; position:relative; z-index:1;">
+            <button class="btn btn-primary w-full" onclick="window.location='deals.html'">Shop Deals & Earn Points</button>
+          </div>
+        </div>
+
+        <!-- Bank Card Visual -->
+        <div class="card" style="padding:24px; background: linear-gradient(135deg, #1f2937, #111827); color: white; border: none; position:relative; overflow:hidden; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+          <div style="position:absolute; top:-30px; right:-20px; width:150px; height:150px; background:radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%); border-radius:50%;"></div>
+          <div style="position:absolute; bottom:-40px; left:-20px; width:120px; height:120px; background:radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%); border-radius:50%;"></div>
+          
+          <div class="flex justify-between items-center" style="margin-bottom: 24px; position:relative; z-index:1;">
+            <div style="font-family: monospace; font-size: 16px; letter-spacing: 1px; color: rgba(255,255,255,0.8);">Swapify Pay</div>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          </div>
+          
+          <div style="font-family: monospace; font-size: 22px; letter-spacing: 3px; margin-bottom: 16px; position:relative; z-index:1; color: white;">
+            **** **** **** 4242
+          </div>
+          
+          <div class="flex justify-between items-end" style="position:relative; z-index:1;">
+            <div>
+              <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.6); margin-bottom: 4px;">Cardholder</div>
+              <div id="walletCardName" style="font-size: 14px; font-weight: 500; letter-spacing: 1px; color: white; text-transform: uppercase;">Sarah Jenkins</div>
+            </div>
+            <div>
+              <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.6); margin-bottom: 4px;">Expires</div>
+              <div style="font-size: 14px; font-weight: 500; letter-spacing: 1px; color: white;">12/28</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:16px; font-family: var(--font-heading);">Recent Transactions</h3>
+      <div id="walletRecentTransactions">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo" style="margin-bottom:8px" aria-label="Swapify Home">
+            <div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div>
+            <span class="logo-text"><span>Swapify</span></span>
+          </a>
+          <p>The cozy community marketplace where you can swap skills, trade items, and grab amazing half-price deals.</p>
+          <div class="footer-social">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on Facebook" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on X" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18"/><path d="M6 6L18 18"/></svg>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on Instagram" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on LinkedIn" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>About Swapify</h4>
+          <ul>
+            <li><a href="about.html">About Swapify</a></li>
+            <li><a href="our-story.html">Our Story</a></li>
+            <li><a href="how-it-works.html">How it Works</a></li>
+            <li><a href="sustainability.html">Sustainability</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Community</h4>
+          <ul>
+            <li><a href="guidelines.html">Guidelines</a></li>
+            <li><a href="success-stories.html">Success Stories</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Help Center</h4>
+          <ul>
+            <li><a href="help-center.html">Help Center</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="contact.html">Contact Support</a></li>
+            <li><a href="trust-safety.html">Trust &amp; Safety</a></li>
+            <li><a href="terms.html">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Swapify. All rights reserved.</p>
+        <div class="footer-tagline">
+          <span>Less waste. More sharing.</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--primary)" stroke="var(--primary)" stroke-width="2" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="bottom-nav"><a href="index.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a><a href="skills.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg><span>Skills</span></a><a href="add.html" class="add-btn"><div class="add-btn-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div></a><a href="messages.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg><span>Messages</span></a><a href="profile.html" class="active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg><span>Profile</span></a></nav>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var urlParams = new URLSearchParams(window.location.search);
+      var userId    = urlParams.get('id');
+      var profileCard = document.querySelector('.profile-card');
+
+      if (!userId && !SwapifyAuth.isLoggedIn()) {
+        window.location.href = 'login.html'; return;
+      }
+
+      var uid   = userId || SwapifyAuth.currentUser().id;
+      var users = SwapifyStore.get('users') || [];
+      var user  = users.find(function(u) { return u.id === uid; });
+
+      if (user) {
+        var DEFAULT_AVATAR = 'https://i.pravatar.cc/150?u=' + uid;
+
+        // Basic info
+        var nameEl = document.querySelector('.profile-name');
+        if (nameEl) nameEl.textContent = user.name || 'Unknown';
+
+        var handleEl = document.querySelector('.profile-handle');
+        if (handleEl) {
+          var onlineDot = user.online
+            ? '<span style="width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block;margin-right:4px" title="Online"></span>'
+            : '<span style="width:8px;height:8px;border-radius:50%;background:var(--muted-fg);display:inline-block;margin-right:4px" title="Offline"></span>';
+          handleEl.innerHTML = '@' + (user.name || 'user').replace(/\s+/g,'').toLowerCase() + ' ' + onlineDot +
+            '<span class="item-card-rating" style="font-size:14px"><svg viewBox="0 0 24 24" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ' +
+            (user.rating ? user.rating.toFixed(1) : 'New') + '</span>';
+        }
+
+        var imgEl = document.querySelector('.profile-avatar img');
+        if (imgEl) { imgEl.src = user.avatar || DEFAULT_AVATAR; imgEl.alt = user.name; }
+
+        var bioEl = document.querySelector('.profile-bio');
+        if (bioEl) bioEl.textContent = user.bio || '';
+
+        var detailsSpans = document.querySelectorAll('.profile-details span');
+        if (detailsSpans.length >= 2) {
+          detailsSpans[0].innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ' + (user.location || 'Not set');
+          detailsSpans[1].innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg> Joined ' + (user.joined || '');
+        }
+
+        // Action buttons
+        var isMe = SwapifyAuth.isLoggedIn() && SwapifyAuth.currentUser().id === uid;
+        var actionButtons = document.querySelector('.profile-info .flex.gap-3');
+        if (actionButtons) {
+          if (isMe) {
+            actionButtons.innerHTML =
+              '<a href="settings.html" class="btn btn-outline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg> Edit Profile</a>' +
+              '<a href="favorites.html" class="btn btn-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> My Favorites</a>';
+          } else {
+            // Message button includes ?partner= so chat opens on the right person
+            actionButtons.innerHTML =
+              '<a href="messages.html?partner=' + uid + '" class="btn btn-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Message</a>' +
+              '<button class="btn btn-outline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg> Follow</button>';
+          }
+        }
+
+        document.title = user.name + ' - Profile | Swapify';
+
+        // ── Dynamic Skills tab ────────────────────────────────
+        var allSkills = SwapifyStore.get('skills') || [];
+        var userSkills = allSkills.filter(function(s) { return s.userId === uid; });
+        var skillsTab = document.getElementById('tab-skills');
+        if (skillsTab) {
+          if (userSkills.length === 0) {
+            skillsTab.innerHTML = '<h2 style="font-size:24px;font-weight:700;margin-bottom:24px">My Skills</h2>' +
+              '<div class="empty-state"><div class="empty-state-icon">🧠</div><h3>No skills yet</h3><p>' +
+              (isMe ? 'Add skills from <a href="settings.html">your settings</a> or complete your profile.' : 'This user has not added any skills yet.') +
+              '</p>' + (isMe ? '<a href="onboarding.html" class="btn btn-primary">Add Skills</a>' : '') + '</div>';
+          } else {
+            var html = '<h2 style="font-size:24px;font-weight:700;margin-bottom:24px">My Skills</h2><div class="grid grid-3 gap-6">';
+            userSkills.forEach(function(s) {
+              html += '<div class="card" style="padding:24px;border:2px dashed var(--border)">' +
+                '<div class="flex justify-between items-center" style="margin-bottom:16px">' +
+                '<div style="width:48px;height:48px;background:rgba(76,175,122,.1);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--success)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>' +
+                '<span class="badge badge-outline">' + (s.level || 'Intermediate') + '</span></div>' +
+                '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px">' + (s.offers || '') + '</h3>' +
+                '<p class="text-sm" style="color:var(--muted-fg);margin-bottom:8px">Wants: ' + (s.requests || '') + '</p>' +
+                (isMe ? '<button class="btn btn-outline btn-sm w-full">Edit</button>' : '') + '</div>';
+            });
+            html += '</div>';
+            skillsTab.innerHTML = html;
+          }
+        }
+
+        // ── Dynamic Swap Requests tab ─────────────────────────
+        var allSwaps = SwapifyStore.get('swaps') || [];
+        var incoming = allSwaps.filter(function(sw) { return sw.toUserId === uid && sw.status === 'pending'; });
+        var requestsTab = document.getElementById('tab-requests');
+        if (requestsTab) {
+          if (incoming.length === 0) {
+            requestsTab.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted-fg)" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div><h3>No swap requests yet</h3><p>Start exploring the community to find your next great swap!</p><a href="skills.html" class="btn btn-primary">Explore Community</a></div>';
+          } else {
+            var reqHtml = '<h2 style="font-size:24px;font-weight:700;margin-bottom:24px">Swap Requests</h2><div style="display:flex;flex-direction:column;gap:12px">';
+            incoming.forEach(function(sw) {
+              var fromUser = users.find(function(u) { return u.id === sw.fromUserId; });
+              var skillRec = (SwapifyStore.get('skills') || []).find(function(s) { return s.id === sw.skillId; });
+              if (!fromUser) return;
+              reqHtml += '<div class="card card-body" style="display:flex;align-items:center;gap:16px">' +
+                '<img src="' + (fromUser.avatar || 'https://i.pravatar.cc/150?u='+sw.fromUserId) + '" style="width:48px;height:48px;border-radius:50%;object-fit:cover">' +
+                '<div style="flex:1"><p><strong>' + fromUser.name + '</strong> wants to swap</p>' +
+                '<p style="font-size:13px;color:var(--muted-fg)">' + (skillRec ? skillRec.offers : 'a skill') + '</p></div>' +
+                '<a href="messages.html?partner=' + sw.fromUserId + '" class="btn btn-primary btn-sm">Reply</a></div>';
+            });
+            reqHtml += '</div>';
+            requestsTab.innerHTML = reqHtml;
+          }
+        }
+
+        // ── Dynamic History and Wallet ─────────────────────────
+        if (isMe) {
+          const history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+          
+          // Populate History Tab
+          const historyTab = document.getElementById('tab-history');
+          if (historyTab) {
+            if (history.length === 0) {
+              historyTab.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted-fg)" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div><h3>No history yet</h3><p>Start exploring the community to find your next great deal!</p><a href="deals.html" class="btn btn-primary">Explore Deals</a></div>';
+            } else {
+              let hHtml = '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;"><h2 style="font-size:24px;font-weight:700; font-family: var(--font-heading);">Purchase History</h2><div style="font-size:14px; color:var(--muted-fg);">Showing all orders</div></div><div style="display:flex;flex-direction:column;gap:16px">';
+              history.slice().reverse().forEach(function(order) {
+                const date = new Date(order.date).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                const methodStr = order.paymentMethod === 'card' ? 'Credit/Debit Card' : (order.paymentMethod === 'points' ? 'Swapify Points' : 'Cash on Delivery');
+                const planStr = order.paymentPlan === 'split' ? '50% Split' : 'Full Payment';
+                hHtml += `
+                  <div class="card card-body" style="display:flex; gap:20px; align-items: center; border: 1px solid var(--border); transition: var(--transition);">
+                    <img src="${order.itemImg}" alt="${order.itemName}" style="width:90px;height:90px;border-radius:var(--radius-sm);object-fit:cover; border: 1px solid var(--border);">
+                    <div style="flex:1;">
+                      <div style="display:flex; justify-content:space-between; margin-bottom:4px; align-items:flex-start;">
+                        <h3 style="font-weight:700; font-size:16px;">${order.itemName}</h3>
+                        <span class="badge badge-success" style="background:rgba(16,185,129,.1); color:var(--success); border: 1px solid var(--success);">${order.status}</span>
+                      </div>
+                      <p style="font-size:13px; color:var(--muted-fg); margin-bottom:12px;">Order ID: ${order.id} &bull; ${date}</p>
+                      <div style="display:flex; gap:16px; font-size:14px; flex-wrap:wrap;">
+                        <span style="background:var(--muted); padding:4px 8px; border-radius:4px;"><strong>Total:</strong> $${order.totalPrice.toFixed(2)}</span>
+                        <span style="background:var(--muted); padding:4px 8px; border-radius:4px;"><strong>Method:</strong> ${methodStr} (${planStr})</span>
+                        <span style="background:var(--muted); padding:4px 8px; border-radius:4px;"><strong>Qty:</strong> ${order.qty}</span>
+                      </div>
+                    </div>
+                  </div>`;
+              });
+              hHtml += '</div>';
+              historyTab.innerHTML = hHtml;
+            }
+          }
+
+          // Populate Wallet Tab
+          let walletPoints = parseInt(localStorage.getItem('walletPoints'));
+          if (isNaN(walletPoints)) walletPoints = 1250;
+          const walletCash = (walletPoints * 0.01).toFixed(2);
+          
+          const valEl = document.getElementById('walletPointsVal');
+          const cashEl = document.getElementById('walletPointsCash');
+          const cardNameEl = document.getElementById('walletCardName');
+          
+          if(valEl) valEl.textContent = walletPoints.toLocaleString();
+          if(cashEl) cashEl.textContent = walletCash;
+          if(cardNameEl && user && user.name) cardNameEl.textContent = user.name;
+
+          const recentContainer = document.getElementById('walletRecentTransactions');
+          if (recentContainer) {
+            if (history.length === 0) {
+              recentContainer.innerHTML = '<div class="card card-body text-center"><p style="color:var(--muted-fg); font-size:14px;">No recent transactions.</p></div>';
+            } else {
+              let rHtml = '<div style="display:flex;flex-direction:column;gap:12px">';
+              history.slice().reverse().slice(0, 5).forEach(function(order) {
+                const date = new Date(order.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const methodStr = order.paymentMethod === 'card' ? 'Card' : (order.paymentMethod === 'points' ? 'Points' : 'COD');
+                rHtml += `
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:16px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--card); transition: var(--transition);">
+                    <div style="display:flex; gap:16px; align-items:center;">
+                      <div style="width:44px;height:44px;background:rgba(124,58,237,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--primary);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                      </div>
+                      <div>
+                        <div style="font-weight:700; font-size:15px; margin-bottom:2px;">${order.itemName}</div>
+                        <div style="font-size:13px; color:var(--muted-fg);">${date} &bull; ${methodStr} &bull; ${order.status}</div>
+                      </div>
+                    </div>
+                    <div style="font-weight:800; color:var(--primary); font-size:16px;">
+                      -$${order.totalPrice.toFixed(2)}
+                    </div>
+                  </div>`;
+              });
+              rHtml += '</div>';
+              recentContainer.innerHTML = rHtml;
+            }
+          }
+        }
+
+        const tabParam = urlParams.get('tab');
+        if (tabParam) {
+          const targetTab = document.querySelector(`.tab[data-tab="${tabParam}"]`);
+          if (targetTab) targetTab.click();
+        }
+
+      } else {
+        // User not found
+        if (profileCard) {
+          profileCard.innerHTML = '<div style="text-align:center;padding:48px 24px;width:100%"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--muted-fg)" stroke-width="2" style="margin:0 auto 16px"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg><h2 style="margin-bottom:8px">User Not Found</h2><p style="color:var(--muted-fg);margin-bottom:24px">This profile doesn\'t exist or has been removed.</p><a href="index.html" class="btn btn-primary">Return Home</a></div>';
+        }
+        var tabsContainer = document.querySelector('.tabs');
+        if (tabsContainer) tabsContainer.style.display = 'none';
+        document.querySelectorAll('.tab-content').forEach(function(el) { el.style.display = 'none'; });
+      }
+    });
+  </script>
+</body>
+</html>
+
+

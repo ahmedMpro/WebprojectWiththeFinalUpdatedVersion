@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications — Swapify</title>
+  <meta name="description" content="Your Swapify notifications.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header"><div class="container header-inner">
+    <a href="index.html" class="logo"><div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div><span class="logo-text"><span>Swapify</span></span></a>
+    <nav class="nav"><a href="index.html" class="nav-link">Home</a><a href="skills.html" class="nav-link">Swap Skills</a><a href="objects.html" class="nav-link">Swap Objects</a><a href="deals.html" class="nav-link">Half Price Deals</a></nav>
+    <div class="header-actions">
+      <button class="btn btn-ghost btn-sm rounded-full" id="themeToggle" onclick="toggleTheme()">🌙</button>
+      <a href="profile.html" class="profile-ring"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" alt="Profile"></a>
+      <button class="mobile-menu-btn btn btn-ghost btn-icon" onclick="toggleMobileMenu()"><svg id="menuIconOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg><svg id="menuIconClose" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    </div>
+  </div><div class="mobile-menu" id="mobileMenu"><a href="index.html">Home</a><a href="skills.html">Swap Skills</a><a href="objects.html">Swap Objects</a><a href="deals.html">Half Price Deals</a><a href="profile.html">Profile</a></div></header>
+
+  <section class="section" style="padding-top:32px">
+    <div class="container" style="max-width:720px">
+      <div class="flex justify-between items-center" style="margin-bottom:32px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h1 style="font-size:32px;font-weight:700;margin-bottom:4px">Notifications</h1>
+          <p style="color:var(--muted-fg)" id="notifSubtitle"></p>
+        </div>
+        <button class="btn btn-outline btn-sm" id="markAllReadBtn">Mark all as read</button>
+      </div>
+      <div id="notifList"></div>
+      <div id="notifEmpty" style="display:none">
+        <div class="empty-state">
+          <div class="empty-state-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted-fg)" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></div>
+          <h3>All caught up!</h3>
+          <p>You have no notifications right now. Keep swapping!</p>
+          <a href="index.html" class="btn btn-primary">Back to Home</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo" style="margin-bottom:8px" aria-label="Swapify Home">
+            <div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div>
+            <span class="logo-text"><span>Swapify</span></span>
+          </a>
+          <p>The cozy community marketplace where you can swap skills, trade items, and grab amazing half-price deals.</p>
+          <div class="footer-social">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on Facebook" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on X" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18"/><path d="M6 6L18 18"/></svg>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on Instagram" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="Follow Swapify on LinkedIn" class="social-link">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>About Swapify</h4>
+          <ul>
+            <li><a href="about.html">About Swapify</a></li>
+            <li><a href="our-story.html">Our Story</a></li>
+            <li><a href="how-it-works.html">How it Works</a></li>
+            <li><a href="sustainability.html">Sustainability</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Community</h4>
+          <ul>
+            <li><a href="guidelines.html">Guidelines</a></li>
+            <li><a href="success-stories.html">Success Stories</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Help Center</h4>
+          <ul>
+            <li><a href="help-center.html">Help Center</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="contact.html">Contact Support</a></li>
+            <li><a href="trust-safety.html">Trust &amp; Safety</a></li>
+            <li><a href="terms.html">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Swapify. All rights reserved.</p>
+        <div class="footer-tagline">
+          <span>Less waste. More sharing.</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--primary)" stroke="var(--primary)" stroke-width="2" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <nav class="bottom-nav"><a href="index.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a><a href="skills.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg><span>Skills</span></a><a href="add.html" class="add-btn"><div class="add-btn-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg></div></a><a href="messages.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg><span>Messages</span></a><a href="profile.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg><span>Profile</span></a></nav>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var user = SwapifyAuth.currentUser();
+      var userId = user ? user.id : 'u2';
+      var notifs = SwapifyNotifications.getForUser(userId);
+      var list = document.getElementById('notifList');
+      var empty = document.getElementById('notifEmpty');
+      var subtitle = document.getElementById('notifSubtitle');
+      var unread = notifs.filter(function(n) { return !n.isRead; }).length;
+      subtitle.textContent = unread > 0 ? unread + ' unread notification' + (unread > 1 ? 's' : '') : 'No unread notifications';
+
+      if (notifs.length === 0) { empty.style.display = 'block'; return; }
+
+      var icons = { message: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg>', match: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg>', deal: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><circle cx="11" cy="11" r="1"/><circle cx="14" cy="14" r="1"/></svg>' };
+
+      notifs.forEach(function(n) {
+        var ago = Math.round((Date.now() - n.createdAt) / 60000);
+        var timeStr = ago < 60 ? ago + 'm ago' : ago < 1440 ? Math.round(ago / 60) + 'h ago' : Math.round(ago / 1440) + 'd ago';
+        var linkHtml = n.link ? 'href="' + escapeHtml(n.link) + '" style="text-decoration:none;color:inherit;display:flex;width:100%"' : 'style="display:flex;width:100%"';
+        var div = document.createElement('div');
+        div.className = 'notif-item' + (n.isRead ? '' : ' unread');
+        div.style.cssText = 'display:flex;align-items:center;cursor:pointer;transition:all var(--transition)';
+        div.innerHTML = '<a ' + linkHtml + ' onclick="SwapifyNotifications.markRead(\'' + n.id + '\');this.closest(\'.notif-item\').classList.remove(\'unread\')"><div class="notif-icon ' + n.type + '">' + (icons[n.type] || icons.message) + '</div><div style="flex:1"><p style="font-weight:' + (n.isRead ? '400' : '600') + ';margin-bottom:4px">' + n.content + '</p><span class="text-xs" style="color:var(--muted-fg)">' + timeStr + '</span></div></a>';
+        list.appendChild(div);
+      });
+
+      document.getElementById('markAllReadBtn').addEventListener('click', function() {
+        SwapifyNotifications.markAllRead(userId);
+        document.querySelectorAll('.notif-item.unread').forEach(function(el) { el.classList.remove('unread'); });
+        document.querySelectorAll('.notif-item .btn').forEach(function(b) { b.remove(); });
+        subtitle.textContent = 'No unread notifications';
+        SwapifyUI.toast('All notifications marked as read', 'success');
+      });
+    });
+  </script>
+</body>
+</html>

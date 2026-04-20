@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Skills Approval — Swapify Admin</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header"><div class="container header-inner">
+    <a href="index.html" class="logo"><div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></div><span class="logo-text"><span>Swapify</span></span></a>
+    <nav class="nav"><a href="admin.html" class="nav-link">Dashboard</a><a href="admin-users.html" class="nav-link">Users</a><a href="admin-skills.html" class="nav-link active">Skills</a><a href="admin-swaps.html" class="nav-link">Swaps</a><a href="admin-reports.html" class="nav-link">Reports</a></nav>
+    <div class="header-actions"><span class="badge badge-primary" style="font-size:11px">ADMIN</span><button class="btn btn-ghost btn-sm rounded-full" id="themeToggle" onclick="toggleTheme()">🌙</button><button class="btn btn-ghost btn-sm" id="adminLogoutBtn" style="color:#ff6b6b;border:1px solid rgba(255,107,107,.3);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700" onclick="if(confirm('Sign out?'))SwapifyAuth.logout()">⏏ Logout</button><a href="profile.html" class="profile-ring"><img src="https://i.pravatar.cc/150?img=60" alt="Admin"></a></div>
+  </div></header>
+
+  <section class="section" style="padding-top:32px">
+    <div class="container">
+      <div class="flex justify-between items-center" style="margin-bottom:24px;flex-wrap:wrap;gap:12px">
+        <div><h1 style="font-size:28px;font-weight:700;margin-bottom:4px">Skills Approval Panel</h1><p style="color:var(--muted-fg)" id="skillCount"></p></div>
+        <div style="display:flex;gap:8px">
+          <select id="filterStatus" class="input" style="max-width:160px;appearance:none">
+            <option value="">All Skills</option>
+            <option value="approved">Approved</option>
+            <option value="pending">Pending</option>
+            <option value="flagged">Flagged</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-3 gap-6" id="skillsGrid"></div>
+      <div id="skillsEmpty" style="display:none"><div class="empty-state"><div class="empty-state-icon">🧠</div><h3>No skills found</h3><p>Adjust your filter to see more.</p></div></div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (!SwapifyAdmin.requireAdmin()) return;
+
+    function render(skills) {
+      var grid = document.getElementById('skillsGrid');
+      var empty = document.getElementById('skillsEmpty');
+      document.getElementById('skillCount').textContent = skills.length + ' skill' + (skills.length !== 1 ? 's' : '');
+      grid.innerHTML = '';
+      empty.style.display = skills.length ? 'none' : 'block';
+      skills.forEach(function(s) {
+        var isApproved = s.approved === true;
+        var isFlagged  = s.flagged === true;
+        var statusLabel = isApproved ? 'Approved' : isFlagged ? 'Flagged' : 'Pending';
+        var statusColor = isApproved ? 'var(--success)' : isFlagged ? '#D97706' : 'var(--primary)';
+        var card = document.createElement('div');
+        card.className = 'card card-body';
+        card.style.cssText = 'border-top:4px solid ' + statusColor;
+        card.innerHTML =
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">' +
+            '<div><div style="font-weight:700;font-size:16px;margin-bottom:4px">' + escapeHtml(s.offers) + '</div><div style="font-size:13px;color:var(--muted-fg)">Requests: ' + escapeHtml(s.requests) + '</div></div>' +
+            '<span class="badge" style="color:' + statusColor + ';border-color:' + statusColor + ';flex-shrink:0">' + statusLabel + '</span>' +
+          '</div>' +
+          '<div style="font-size:13px;color:var(--muted-fg);margin-bottom:4px">Owner: <strong>' + escapeHtml(s.ownerName) + '</strong></div>' +
+          '<div style="font-size:13px;color:var(--muted-fg);margin-bottom:16px">Level: ' + escapeHtml(s.level) + ' · ' + escapeHtml(s.location) + '</div>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+            '<button class="btn btn-primary btn-sm" data-action="approve" data-sid="' + s.id + '"' + (isApproved?' disabled style="opacity:.5"':'') + '>Approve</button>' +
+            '<button class="btn btn-outline btn-sm" data-action="reject" data-sid="' + s.id + '"' + (isFlagged?' disabled style="opacity:.5"':'') + '>Reject</button>' +
+          '</div>';
+        grid.appendChild(card);
+      });
+    }
+
+    function getFiltered() {
+      var all = SwapifyAdmin.getAllSkills();
+      var f = document.getElementById('filterStatus').value;
+      if (!f) return all;
+      return all.filter(function(s) {
+        if (f==='approved') return s.approved === true;
+        if (f==='flagged')  return s.flagged  === true;
+        if (f==='pending')  return s.approved !== true && s.flagged !== true;
+        return true;
+      });
+    }
+
+    render(getFiltered());
+
+    document.getElementById('filterStatus').addEventListener('change', function() { render(getFiltered()); });
+
+    document.getElementById('skillsGrid').addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-action]');
+      if (!btn || btn.disabled) return;
+      var sid = btn.dataset.sid;
+      var action = btn.dataset.action;
+      if (action === 'approve') { SwapifyAdmin.approveSkill(sid); SwapifyUI.toast('Skill approved ✓', 'success'); }
+      else if (action === 'reject') { SwapifyAdmin.rejectSkill(sid); SwapifyUI.toast('Skill rejected', 'info'); }
+      render(getFiltered());
+    });
+  });
+  </script>
+</body>
+</html>
