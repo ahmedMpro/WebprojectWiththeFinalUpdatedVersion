@@ -53,7 +53,7 @@
       <a href="messages.html" class="btn btn-icon btn-ghost" style="position:relative"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg><span class="notification-dot"></span></a>
       <button class="btn btn-icon btn-ghost"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
       <button class="btn btn-ghost btn-sm rounded-full" id="themeToggle" onclick="toggleTheme()">🌙</button>
-      <a href="profile.html" class="profile-ring"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" alt="Profile"></a>
+      <a href="profile.html" class="profile-ring"><img src="" id="headerAvatarImg" alt="Profile" style="background:var(--muted)"></a>
       <button class="mobile-menu-btn btn btn-ghost btn-icon" onclick="toggleMobileMenu()"><svg id="menuIconOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg><svg id="menuIconClose" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
     </div>
   </div><div class="mobile-menu" id="mobileMenu"><a href="index.html">Home</a><a href="skills.html">Swap Skills</a><a href="objects.html">Swap Objects</a><a href="deals.html">Half Price Deals</a><a href="messages.html">Messages</a><a href="profile.html">Profile</a></div></header>
@@ -62,12 +62,12 @@
   <div class="profile-cover"></div>
 
   <!-- PROFILE CONTENT -->
-  <div class="container" style="padding-bottom:80px">
+  <div class="container" style="padding-bottom:120px">
 
     <!-- Profile Card -->
     <div class="profile-card fade-in" style="margin-bottom:48px">
       <div class="profile-avatar">
-        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200&h=200" alt="Sarah Jenkins" class="avatar-xl" style="width:160px;height:160px;border-radius:50%;border:4px solid var(--bg);object-fit:cover;box-shadow:var(--shadow-lg)">
+        <img src="" id="profileMainAvatar" alt="Profile" class="avatar-xl" style="width:160px;height:160px;border-radius:50%;border:4px solid var(--bg);object-fit:cover;box-shadow:var(--shadow-lg);background:var(--muted)">
         <!-- Verified shield — hidden by default; JS shows after 50 swaps -->
         <div class="profile-verified" id="profileVerifiedBadge" style="display:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
       </div>
@@ -349,7 +349,7 @@
     }
 
     /* ── Populate basic info ── */
-    var DEFAULT_AVATAR = 'https://i.pravatar.cc/150?u=' + uid;
+    var DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='100' fill='%23EDE9FE'/%3E%3Ccircle cx='100' cy='78' r='38' fill='%237C3AED'/%3E%3Cellipse cx='100' cy='180' rx='60' ry='48' fill='%237C3AED'/%3E%3C/svg%3E";
 
     var nameEl = document.querySelector('.profile-name');
     if (nameEl) nameEl.textContent = user.name || 'Unknown';
@@ -365,7 +365,16 @@
     }
 
     var imgEl = document.querySelector('.profile-avatar img');
-    if (imgEl) { imgEl.src = user.avatar || DEFAULT_AVATAR; imgEl.alt = user.name; }
+    if (imgEl) { 
+      imgEl.src = (user.avatar && user.avatar.trim()) ? user.avatar : DEFAULT_AVATAR; 
+      imgEl.alt = user.name; 
+    }
+    /* Also update header ring */
+    var headerImg = document.getElementById('headerAvatarImg');
+    if (headerImg) {
+      headerImg.src = (user.avatar && user.avatar.trim()) ? user.avatar : DEFAULT_AVATAR;
+      headerImg.alt = user.name;
+    }
 
     var bioEl = document.querySelector('.profile-bio');
     if (bioEl) bioEl.textContent = user.bio || '';

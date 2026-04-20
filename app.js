@@ -6,6 +6,9 @@
 (function() {
 'use strict';
 
+// ===== DEFAULT AVATAR (SVG data URI — used for new accounts before upload) =====
+const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='100' fill='%23EDE9FE'/%3E%3Ccircle cx='100' cy='78' r='38' fill='%237C3AED'/%3E%3Cellipse cx='100' cy='180' rx='60' ry='48' fill='%237C3AED'/%3E%3C/svg%3E";
+
 // ===== STORE (localStorage CRUD) =====
 const Store = {
   get(key) { try { return JSON.parse(localStorage.getItem('swapify_' + key)); } catch { return null; } },
@@ -75,7 +78,7 @@ const Auth = {
   register(name, email, password) {
     const users = Store.get('users') || [];
     if (users.find(u => u.email === email)) return { success: false, error: 'Email already registered' };
-    const user = { id: 'u' + Date.now(), name, email, password, avatar: 'https://i.pravatar.cc/150?u=' + email, bio: '', location: '', joined: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), favorites: [] };
+    const user = { id: 'u' + Date.now(), name, email, password, avatar: '', bio: '', location: '', joined: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), favorites: [] };
     users.push(user);
     Store.set('users', users);
     Store.setSession(user);
@@ -198,9 +201,8 @@ const UI = {
   updateNav() {
     const profileRings = document.querySelectorAll('.profile-ring img');
     const user = Auth.currentUser();
-    if (user) {
-      profileRings.forEach(function(img) { img.src = user.avatar; img.alt = user.name; });
-    }
+    const av = (user && user.avatar && user.avatar.trim()) ? user.avatar : DEFAULT_AVATAR;
+    profileRings.forEach(function(img) { img.src = av; img.alt = user ? user.name : 'Profile'; });
     // Update notification badge
     if (user) {
       const notifs = (Store.get('notifications') || []).filter(function(n) { return n.userId === user.id && !n.isRead; });

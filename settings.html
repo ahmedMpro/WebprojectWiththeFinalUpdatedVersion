@@ -52,8 +52,26 @@
               <input type="text" class="input" id="settingsLocation" placeholder="City, Country">
             </div>
             <div class="form-group" style="margin-bottom:20px">
-              <label>Avatar URL</label>
-              <input type="url" class="input" id="settingsAvatar" placeholder="https://...">
+              <label>Profile Photo</label>
+              <div style="display:flex;align-items:center;gap:16px;margin-top:8px">
+                <div style="position:relative;flex-shrink:0">
+                  <img id="settingsAvatarPreview" src="" alt="Profile preview"
+                    style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--primary);background:var(--muted)">
+                  <label for="settingsAvatarFile" style="position:absolute;bottom:0;right:0;width:26px;height:26px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow-md)" title="Change photo">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                  </label>
+                </div>
+                <div style="flex:1">
+                  <p style="font-size:13px;color:var(--muted-fg);margin-bottom:8px">Upload a new profile photo (JPG, PNG, WEBP — max 2MB). If no photo is uploaded, a default avatar will be shown.</p>
+                  <label for="settingsAvatarFile" class="btn btn-outline btn-sm" style="cursor:pointer;display:inline-flex">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                    Choose Photo
+                  </label>
+                  <button type="button" class="btn btn-ghost btn-sm" id="removeAvatarBtn" style="color:var(--error);margin-left:8px">Remove Photo</button>
+                </div>
+              </div>
+              <input type="file" id="settingsAvatarFile" accept="image/jpeg,image/png,image/webp" style="display:none">
+              <input type="hidden" id="settingsAvatarData">
             </div>
             <div class="form-group" style="margin-bottom:20px">
               <label>New Password</label>
@@ -176,14 +194,50 @@
         var nameInput = document.getElementById('settingsName');
         var emailInput = document.getElementById('settingsEmail');
         var locationInput = document.getElementById('settingsLocation');
-        var avatarInput = document.getElementById('settingsAvatar');
+        var avatarPreview = document.getElementById('settingsAvatarPreview');
+        var avatarDataInput = document.getElementById('settingsAvatarData');
+        var avatarFileInput = document.getElementById('settingsAvatarFile');
+        var removeAvatarBtn = document.getElementById('removeAvatarBtn');
         var onlineToggle = document.getElementById('settingsOnlineToggle');
+
+        var DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='100' fill='%23EDE9FE'/%3E%3Ccircle cx='100' cy='78' r='38' fill='%237C3AED'/%3E%3Cellipse cx='100' cy='180' rx='60' ry='48' fill='%237C3AED'/%3E%3C/svg%3E";
         
         if (nameInput) nameInput.value = user.name || '';
         if (emailInput) emailInput.value = user.email || '';
         if (locationInput) locationInput.value = user.location || '';
-        if (avatarInput) avatarInput.value = user.avatar || '';
+        /* Avatar preview */
+        var currentAvatar = (user.avatar && user.avatar.trim()) ? user.avatar : DEFAULT_AVATAR;
+        if (avatarPreview) avatarPreview.src = currentAvatar;
+        if (avatarDataInput) avatarDataInput.value = user.avatar || '';
         if (onlineToggle && user.online) onlineToggle.classList.add('active');
+
+        /* File upload handler */
+        if (avatarFileInput) {
+          avatarFileInput.addEventListener('change', function() {
+            var file = avatarFileInput.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) {
+              SwapifyUI.toast('Image must be under 2MB', 'warning'); return;
+            }
+            var reader = new FileReader();
+            reader.onload = function(e) {
+              var dataUrl = e.target.result;
+              if (avatarPreview) avatarPreview.src = dataUrl;
+              if (avatarDataInput) avatarDataInput.value = dataUrl;
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+
+        /* Remove photo handler */
+        if (removeAvatarBtn) {
+          removeAvatarBtn.addEventListener('click', function() {
+            if (avatarPreview) avatarPreview.src = DEFAULT_AVATAR;
+            if (avatarDataInput) avatarDataInput.value = '';
+            if (avatarFileInput) avatarFileInput.value = '';
+            SwapifyUI.toast('Profile photo removed', 'info');
+          });
+        }
       }
       
       var form = document.getElementById('settingsForm');
@@ -200,7 +254,7 @@
             name: nameInput ? nameInput.value.trim() : '', 
             email: emailInput ? emailInput.value.trim() : '',
             location: locationInput ? locationInput.value.trim() : '',
-            avatar: avatarInput ? avatarInput.value.trim() : '',
+            avatar: (document.getElementById('settingsAvatarData').value.trim()) || (SwapifyAuth.currentUser() ? SwapifyAuth.currentUser().avatar : ''),
             online: onlineToggle ? onlineToggle.classList.contains('active') : false
           });
           SwapifyUI.updateNav();
